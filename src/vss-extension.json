@@ -1,0 +1,97 @@
+{
+    "manifestVersion": 1,
+    "id": "rp-build-release-azurepolicy",
+    "name": "Azure Policy and Governance Pipelines Tasks",
+    "version": "1.0.0",
+    "publisher": "RazorSPoint",
+    "targets": [{
+        "id": "Microsoft.VisualStudio.Services"
+    }],
+    "description": "Tasks for Builds and Releases related to Governance Topics.",
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "tags": [
+        "Azure Policy", "Blueprint","Initiative","Management Groups",
+        "Governance", "Deployment","Compliance"
+    ],
+    "icons": {
+        "default": "Images/Icon128x128.png",
+        "large": "Images/Icon512x512.png"
+    },
+    "content": {
+        "details": {
+            "path": "overview.md"
+        }
+    },
+    "links": {
+        "getstarted": {
+            "uri": "https://github.com/RazorSPoint/azure-devops-azure-policy-extension.git"
+        },
+        "learn": {
+            "uri": ""
+        },
+        "issues": { 
+            "uri": "https://github.com/RazorSPoint/azure-devops-azure-policy-extension/issues"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/RazorSPoint/azure-devops-azure-policy-extension"
+    },
+    "badges": [
+        {
+            "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_build/latest?definitionId=17",
+            "uri": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_apis/build/status/RazorSPoint.azure-devops-azure-policy-extension",
+            "description": "Azure DevOps build for the project"
+        },
+        {
+            "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_release?view=mine&definitionId=2&_a=releases",
+            "uri": "https://vsrm.dev.azure.com/RazorSpoint/_apis/public/Release/badge/5618fbe3-b9e3-4226-a374-cfd1d55bb77a/2/2",
+            "description": "Azure DevOps internal release for the project"
+        },
+        {
+            "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_release?view=mine&definitionId=2&_a=releases",
+            "uri": "https://vsrm.dev.azure.com/RazorSpoint/_apis/public/Release/badge/5618fbe3-b9e3-4226-a374-cfd1d55bb77a/2/3",
+            "description": "Azure DevOps public release for the project"
+        }
+    ],
+    "screenshots": [{
+            "path": "Images/Preview01.png"
+        },
+        {
+            "path": "Images/Preview02.png"
+        },
+        {
+            "path": "Images/Preview03.png"
+        }
+    ],
+    "branding": {
+        "color": "rgb(89,180,217)",
+        "theme": "light"
+    },
+    "scopes": [
+        "vso.build_execute"
+    ],
+    "files": [
+        {
+            "path": "AzurePolicy"
+        },
+        {
+            "path": "Images",
+            "addressable": true
+        }
+    ],
+    "contributions": [
+        {
+            "id": "RP-AzurePolicy",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "AzurePolicy"
+            }
+        }   
+    ]
+}
