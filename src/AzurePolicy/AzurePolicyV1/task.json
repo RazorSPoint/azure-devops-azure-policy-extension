@@ -1,0 +1,90 @@
+{
+    "id": "ef6e39d1-dbac-47e0-8c6b-f5735aaa4096",
+    "name": "DeployAzureGovernance",
+    "friendlyName": "Deploy Azure Governance",
+    "description": "Deploys Azure governance definitions like policies, nitiatives or blueprints.",
+    "author": "Sebastian Schütze",
+    "helpMarkDown": "It uses the AzureRM PowerShell Module to deploy the definitions.<br/><br/>[More Information]()",
+    "category": "Deploy",
+    "visibility": [
+        "Release"
+    ],
+    "demands": ["PowerShell","AzurePS"],
+    "version": {
+        "Major": "0",
+        "Minor": "5",
+        "Patch": "0"
+    },
+    "preview": false,
+    "minimumAgentVersion": "2.115.0",
+    "groups": [{
+        "name": "advanced",
+        "displayName": "Advanced",
+        "isExpanded": false
+    }],
+    "instanceNameFormat": "Deploy Governance for $(GovernanceType)",
+    "inputs": [{
+            "name": "GovernanceType",
+            "type": "radio",
+            "label": "Governance Type",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "The type of governance that should be deployed.",
+            "options": {
+                "PolicyDefinition": "Policy Definition",
+                "PolicyInitiative": "Policy Initiative",
+                "Blueprint": "Blueprint"
+            }
+        },
+        {
+            "name": "AzureResourceManager",
+            "aliases": [
+                "azurerm"
+            ],
+            "type": "connectedService:AzureRM",
+            "label": "Azure subscription",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Select the Azure Resource Manager subscription for the deployment. <br/><br/> Note: To configure new a service connection, select the Azure subscription from the list and click 'Authorize'. <br/><br/>If your subscription is not listed or if you want to use an existing service principal, you can setup an Azure service connection using the 'Add' or 'Manage' button. <br/><br/>Managed Service Identity service connection scope is limited to access granted to the Azure virtual machine running the agent. Ensure that the VM has access to specified resources. <br/><br/>Service connection scoped at Management Group level are visible only in Azure PowerShell task."
+        },
+        {
+            "name": "FileOrInline",
+            "type": "pickList",
+            "label": "Type",
+            "defaultValue": "File",
+            "required": true,
+            "helpMarkDown": "Type of the JSON: JSON file path or inline JSON.",
+            "options": {
+                "File": "File Path",
+                "Inline": "Inline JSON"
+            }
+        },
+        {
+            "name": "JsonInline",
+            "type": "multiLine",
+            "label": "Inline JSON",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Allows you to specify JSON containing the definition. <br/><br/>Check the [existing schema]() for a well formatted definition.",
+            "visibleRule": "FileOrInline = Inline",
+            "properties": {
+                "resizable": "true",
+                "rows": "10"
+            }
+        },
+        {
+            "name": "JsonFilePath",
+            "type": "filePath",
+            "label": "JSON File Path",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Path to the file containing the JSON. <br/><br/>.",
+            "visibleRule": "FileOrInline = File"
+        }     
+    ],
+    "execution": {
+        "PowerShell3": {
+            "target": "StartDeploy.ps1"
+        }
+    }
+}
