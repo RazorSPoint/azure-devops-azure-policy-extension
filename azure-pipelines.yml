@@ -1,0 +1,77 @@
+resources:
+- repo: self
+
+
+trigger:
+  batch: true
+  branches:
+    include: [ master, develop ]
+
+queue:
+  name: Hosted VS2017
+  demands: npm
+
+steps:
+- task: gittools.gitversion.gitversion-task.GitVersion@4
+  displayName: GitVersion
+  inputs:
+    preferBundledVersion: false
+
+
+- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+  displayName: 'Pester Test Runner'
+  inputs:
+    scriptFolder: "@{Path=''$(Build.SourcesDirectory)'; Parameters=@{AgentToolPath ='$(Agent.WorkFolder)'}}"
+    resultsFile: '$(Build.SourcesDirectory)\Test-Pester.XML'
+    run32Bit: false
+
+  enabled: false
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results **\Test-*.xml'
+  inputs:
+    testResultsFormat: NUnit
+    testResultsFiles: '**\Test-*.xml'
+    searchFolder: '$(Build.SourcesDirectory)'
+
+  enabled: false
+  condition: succeededOrFailed()
+
+- powershell: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1'
+  displayName: 'Copy Common PowerShell Modules Into Tasks'
+
+- powershell: '$(Build.SourcesDirectory)/tools/GenerateChangelog.ps1'
+  displayName: 'Generate Extension Readme.md'
+
+- task: geeklearningio.gl-vsts-tasks-file-patch.json-patch-task.JsonPatch@3
+  displayName: 'Patch Azure Policy task.json'
+  inputs:
+    JsonWorkingDir: '$(Build.SourcesDirectory)/src/AzurePolicy/AzurePolicyV1'
+    JsonTargetFilters: task.json
+    JsonPatchContent: '= /version/Patch => "$(GitVersion.CommitsSinceVersionSource)"'
+    OutputPatchFile: true
+
+- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+  displayName: 'Package Extension for every branch except master'
+  inputs:
+    rootFolder: src
+    outputPath: '$(Build.ArtifactStagingDirectory)/package/'
+    extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.CommitsSinceVersionSource)'
+
+  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+  displayName: 'Package Extension for refs/heads/master only'
+  inputs:
+    rootFolder: src
+    outputPath: '$(Build.ArtifactStagingDirectory)/package/'
+    extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
+
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: AzurepolicyTasks'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/package/'
+
+    ArtifactName: AzurepolicyTasks
