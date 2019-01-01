@@ -29,7 +29,7 @@
             "uri": "https://github.com/RazorSPoint/azure-devops-azure-policy-extension.git"
         },
         "learn": {
-            "uri": ""
+            "uri": "https://docs.microsoft.com/en-us/azure/governance/policy/overview"
         },
         "issues": { 
             "uri": "https://github.com/RazorSPoint/azure-devops-azure-policy-extension/issues"
@@ -41,18 +41,18 @@
     },
     "badges": [
         {
-            "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_build/latest?definitionId=17",
-            "uri": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_apis/build/status/RazorSPoint.azure-devops-azure-policy-extension",
+            "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_build/latest?definitionId=19",
+            "uri": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_apis/build/status/RazorSPoint.azure-devops-azure-policy-extension?branchName=master",
             "description": "Azure DevOps build for the project"
         },
         {
-            "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_release?view=mine&definitionId=2&_a=releases",
-            "uri": "https://vsrm.dev.azure.com/RazorSpoint/_apis/public/Release/badge/5618fbe3-b9e3-4226-a374-cfd1d55bb77a/2/2",
+            "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_release?view=mine&definitionId=4&_a=releases",
+            "uri": "https://vsrm.dev.azure.com/RazorSpoint/_apis/public/Release/badge/3809133c-f9cd-4d0d-8e63-d1953bedc6cf/1/1",
             "description": "Azure DevOps internal release for the project"
         },
         {
-            "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_release?view=mine&definitionId=2&_a=releases",
-            "uri": "https://vsrm.dev.azure.com/RazorSpoint/_apis/public/Release/badge/5618fbe3-b9e3-4226-a374-cfd1d55bb77a/2/3",
+            "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_release?view=mine&definitionId=4&_a=releases",
+            "uri": "https://vsrm.dev.azure.com/RazorSpoint/_apis/public/Release/badge/3809133c-f9cd-4d0d-8e63-d1953bedc6cf/1/2",
             "description": "Azure DevOps public release for the project"
         }
     ],
