@@ -23,7 +23,6 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-src/AzurPolicy/**/ps_modules/
 
 
 
@@ -292,3 +291,4 @@ __pycache__/
 
 #custom solution files
 src/overview.md
+src/AzurePolicy/AzurePolicyV1/ps_modules/**
