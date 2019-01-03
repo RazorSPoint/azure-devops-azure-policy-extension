@@ -9,12 +9,48 @@ param()
 Trace-VstsEnteringInvocation $MyInvocation
 
 try {
+
     Import-VstsLocStrings "$PSScriptRoot/task.json"
-	
-    . "$PSScriptRoot/ps_modules/CommonScripts/Utility.ps1"
+
+    Import-Module $PSScriptRoot\ps_modules\CommonScripts\VstsAzureHelpers_    
+    . "$PSScriptRoot\ps_modules\CommonScripts\Utility.ps1"
+
     # get the tmp path of the agent
     $agentTmpPath = "$($env:AGENT_RELEASEDIRECTORY)\_temp"
-    $tmpInlineXmlFileName = [System.IO.Path]::GetRandomFileName() + ".json"
+    $tmpInlineJaonFileName = [System.IO.Path]::GetRandomFileName() + ".json"
+
+    [string]$GovernanceType = Get-VstsInput -Name GovernanceType
+
+    [string]$FileOrInline = Get-VstsInput -Name FileOrInline
+
+    if ($FileOrInline -eq "File") {
+        [string]$JsonFilePath = Get-VstsInput -Name JsonFilePath
+        if (-not (Test-Path $JsonFilePath)) {
+            Write-VstsTaskError -Message "`nFile path '$JsonFilePath' for parameter JsonFilePath does not exist.`n"
+        }
+    }
+    else {
+
+        #get json string and check for valid json
+        [string]$JsonInline = (Get-VstsInput -Name JsonInline)
+		
+        $JsonObject = New-Object System.Management.Automation.PSCustomObject
+        try {
+            $JsonFilePath = "$agentTmpPath/$tmpInlineJaonFileName"
+            #if path not exists, create it!
+            if (-not (Test-Path -Path $agentTmpPath)) {
+                New-Item -ItemType Directory -Force -Path $agentTmpPath
+            }
+            $JsonObject = ConvertFrom-Json -InputObject $JsonInline
+            $JsonObject | ConvertTo-Json -depth 100 | Out-File $JsonFilePath
+        }
+        catch [System.ArgumentException] {
+            throw "$($_.toString())"
+        }
+    }
+
+    #init azure connection
+    Initialize-Azure
 
 
 }

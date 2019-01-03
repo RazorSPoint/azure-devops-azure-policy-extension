@@ -37,9 +37,9 @@
             }
         },
         {
-            "name": "AzureResourceManager",
+            "name": "ConnectedServiceName",
             "aliases": [
-                "azurerm"
+                "azureSubscription"
             ],
             "type": "connectedService:AzureRM",
             "label": "Azure subscription",
