@@ -1,49 +1,51 @@
-﻿[CmdletBinding(DefaultParameterSetName='Subscription')]
+[CmdletBinding(DefaultParameterSetName='Subscription')]
 param(
-    [Parameter(Mandatory=$true, Position=0)]
-    [string]$PolicyFilePath,
     [Parameter(Mandatory=$true, ParameterSetName='Subscription')]
     [string]$SubscriptionId,
     [Parameter(Mandatory=$true, ParameterSetName='ManagementGroup')]
-    [string]$ManagementGroupId
+    [string]$ManagementGroupId,
+    [Parameter(Mandatory=$true, Position=0)]
+    [string]$Name,
+    [Parameter(Mandatory=$true, Position=1)]
+    [string]$DisplayName,
+    [Parameter(Mandatory=$true, Position=2)]
+    [string]$Description,
+    [Parameter(Mandatory=$true, Position=3)]
+    [string]$Metadata,
+    [Parameter(Mandatory=$true, Position=4)]
+    [ValidateSet("all","indexed")]
+    [string]$Mode,
+    [Parameter(Mandatory=$true, Position=5)]
+    [string]$Parameters,
+    [Parameter(Mandatory=$true, Position=6)]
+    [string]$PolicyRule
 )
-
-$policyDef = Get-Content -Path $PolicyFilePath | Out-String | ConvertFrom-Json
-
-$policyRule = $policyDef.properties.policyRule | ConvertTo-Json -Depth 30 -Compress
-$policyParameters = $policyDef.properties.parameters | ConvertTo-Json -Depth 30 -Compress
-
-$name = $policyDef.name
-$displayName = $policyDef.properties.displayName
-$description = $policyDef.properties.description
-$metadata = $policyDef.properties.metadata | ConvertTo-Json -Depth 30 -Compress
-$mode = $policyDef.properties.mode
 
 if($PSCmdlet.ParameterSetName -eq "Subscription"){
 
     $policy = $null
     try{
-        $policy= Get-AzureRmPolicyDefinition -Name $name -SubscriptionId $SubscriptionId -ErrorAction SilentlyContinue
+        $policy= Get-AzureRmPolicyDefinition -Name $Name -SubscriptionId $SubscriptionId -ErrorAction SilentlyContinue
     }catch{}  
 
     if($policy){
-        $policy = Set-AzureRmPolicyDefinition -SubscriptionId $SubscriptionId -Policy $policyRule -Name $name -DisplayName $displayName -Description $description -Mode $mode -Metadata $metadata -Parameter $policyParameters
+        $policy = Set-AzureRmPolicyDefinition -SubscriptionId $SubscriptionId -Policy $PolicyRule -Name $Name -DisplayName $DisplayName -Description $Description -Mode $Mode -Metadata $Metadata -Parameter $Parameters
     }else{
-        $policy = New-AzureRmPolicyDefinition -SubscriptionId $SubscriptionId -Policy $policyRule -Name $name -DisplayName $displayName -Description $description -Mode $mode -Metadata $metadata -Parameter $policyParameters
+        $policy = New-AzureRmPolicyDefinition -SubscriptionId $SubscriptionId -Policy $PolicyRule -Name $Name -DisplayName $DisplayName -Description $Description -Mode $Mode -Metadata $Metadata -Parameter $Parameters
     }
 
-}else{
+}elseif($PSCmdlet.ParameterSetName -eq "ManagementGroup"){
 
     $policy = $null
     try{
-        $policy= Get-AzureRmPolicyDefinition -Name $name -ManagementGroupName $ManagementGroupId -ErrorAction SilentlyContinue
+        $policy= Get-AzureRmPolicyDefinition -Name $Name -ManagementGroupName $ManagementGroupId -ErrorAction SilentlyContinue
     }catch{}
 
     if($policy){
-        $policy = Set-AzureRmPolicyDefinition -ManagementGroupName $ManagementGroupId -Policy $policyRule -Name $name -DisplayName $displayName -Description $description -Mode $mode -Metadata $metadata -Parameter $policyParameters
+        $policy = Set-AzureRmPolicyDefinition -ManagementGroupName $ManagementGroupId -Policy $PolicyRule -Name $Name -DisplayName $DisplayName -Description $Description -Mode $Mode -Metadata $Metadata -Parameter $Parameters
     }else{
-        $policy = New-AzureRmPolicyDefinition -ManagementGroupName $ManagementGroupId -Policy $policyRule -Name $name -DisplayName $displayName -Description $description -Mode $mode -Metadata $metadata -Parameter $policyParameters
+        $policy = New-AzureRmPolicyDefinition -ManagementGroupName $ManagementGroupId -Policy $PolicyRule -Name $Name -DisplayName $DisplayName -Description $Description -Mode $Mode -Metadata $Metadata -Parameter $Parameters
     }
 }
 
-Write-Verbose ($policy | ConvertTo-Json)
+Write-VstsTaskVerbose ($policy | ConvertTo-Json)

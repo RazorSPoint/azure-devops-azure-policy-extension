@@ -8,42 +8,32 @@ param(
     [string]$ManagementGroupId
 )
 
-$policyDef = Get-Content -Path $PolicyFilePath | Out-String | ConvertFrom-Json
-
-$policyRule = $policyDef.properties.policyRule | ConvertTo-Json -Depth 30 -Compress
-$policyParameters = $policyDef.properties.parameters | ConvertTo-Json -Depth 30 -Compress
-
-$name = $policyDef.name
-$displayName = $policyDef.properties.displayName
-$description = $policyDef.properties.description
-$metadata = $policyDef.properties.metadata | ConvertTo-Json -Depth 30 -Compress
-$mode = $policyDef.properties.mode
-
-if($PSCmdlet.ParameterSetName -eq "Subscription"){
-
-    $policy = $null
-    try{
-        $policy= Get-AzureRmPolicyDefinition -Name $name -SubscriptionId $SubscriptionId -ErrorAction SilentlyContinue
-    }catch{}  
-
-    if($policy){
-        $policy = Set-AzureRmPolicyDefinition -SubscriptionId $SubscriptionId -Policy $policyRule -Name $name -DisplayName $displayName -Description $description -Mode $mode -Metadata $metadata -Parameter $policyParameters
-    }else{
-        $policy = New-AzureRmPolicyDefinition -SubscriptionId $SubscriptionId -Policy $policyRule -Name $name -DisplayName $displayName -Description $description -Mode $mode -Metadata $metadata -Parameter $policyParameters
-    }
-
+if (-not (Test-Path $PolicyFilePath)) {
+    throw "`nFile path '$PolicyFilePath' for the policy does not exist.`n"
 }else{
 
-    $policy = $null
-    try{
-        $policy= Get-AzureRmPolicyDefinition -Name $name -ManagementGroupName $ManagementGroupId -ErrorAction SilentlyContinue
-    }catch{}
+    $policyDef = Get-Content -Path $PolicyFilePath | Out-String | ConvertFrom-Json
 
-    if($policy){
-        $policy = Set-AzureRmPolicyDefinition -ManagementGroupName $ManagementGroupId -Policy $policyRule -Name $name -DisplayName $displayName -Description $description -Mode $mode -Metadata $metadata -Parameter $policyParameters
-    }else{
-        $policy = New-AzureRmPolicyDefinition -ManagementGroupName $ManagementGroupId -Policy $policyRule -Name $name -DisplayName $displayName -Description $description -Mode $mode -Metadata $metadata -Parameter $policyParameters
+    $splattedArgs = @{
+        Name = $policyDef.name
+        DisplayName = $policyDef.properties.displayName
+        Description = $policyDef.properties.description
+        Metadata = $policyDef.properties.metadata | ConvertTo-Json -Depth 30 -Compress
+        Mode = $policyDef.properties.mode
+        Parameters = $policyDef.properties.parameters | ConvertTo-Json -Depth 30 -Compress
+        PolicyRule = $policyDef.properties.policyRule | ConvertTo-Json -Depth 30 -Compress
     }
-}
 
-Write-Verbose ($policy | ConvertTo-Json)
+    if ($PSCmdlet.ParameterSetName -eq "SubscriptionId") {
+
+        $splattedArgs | Add-Member "SubscriptionId" $SubscriptionId
+
+    }elseif ($PSCmdlet.ParameterSetName -eq "ManagementGroupId") {
+
+        $splattedArgs | Add-Member "ManagementGroupId" $ManagementGroupName
+
+    }  
+
+    . "$PSScriptRoot\DeployPolicy.ps1" @splattedArgs
+
+}
