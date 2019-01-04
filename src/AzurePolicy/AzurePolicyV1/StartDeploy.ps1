@@ -17,9 +17,17 @@ try {
 
     # get the tmp path of the agent
     $agentTmpPath = "$($env:AGENT_RELEASEDIRECTORY)\_temp"
-    $tmpInlineJaonFileName = [System.IO.Path]::GetRandomFileName() + ".json"
+    $tmpInlineJsonFileName = [System.IO.Path]::GetRandomFileName() + ".json"
 
     [string]$GovernanceType = Get-VstsInput -Name GovernanceType
+
+    [string]$DefinitionLocation = Get-VstsInput -Name DefinitionLocation
+
+    [string]$SubscriptionId = Get-VstsInput -Name SubscriptionId
+
+    [string]$ManagementGroupName = Get-VstsInput -Name ManagementGroupName
+
+    [string]$DeploymentType = Get-VstsInput -Name DeploymentType
 
     [string]$FileOrInline = Get-VstsInput -Name FileOrInline
 
@@ -36,7 +44,7 @@ try {
 		
         $JsonObject = New-Object -TypeName "PSCustomObject"
         try {
-            $JsonFilePath = "$agentTmpPath/$tmpInlineJaonFileName"
+            $JsonFilePath = "$agentTmpPath/$tmpInlineJsonFileName"
             #if path not exists, create it!
             if (-not (Test-Path -Path $agentTmpPath)) {
                 New-Item -ItemType Directory -Force -Path $agentTmpPath
@@ -52,11 +60,38 @@ try {
     Write-VstsTaskWarning -Message "`$JsonObject: $JsonObject"
     Write-VstsTaskWarning -Message "`$JsonFilePath :$JsonFilePath"
     Write-VstsTaskWarning -Message "`$GovernanceType :$GovernanceType"
+    Write-VstsTaskWarning -Message "`$DefinitionLocation :$DefinitionLocation"
+    Write-VstsTaskWarning -Message "`$SubscriptionId :$SubscriptionId"
+    Write-VstsTaskWarning -Message "`$ManagementGroupName :$ManagementGroupName"
+    Write-VstsTaskWarning -Message "`$DeploymentType :$DeploymentType"
+    Write-VstsTaskWarning -Message "`$FileOrInline :$FileOrInline"
 
     #init azure connection
     Initialize-Azure
 
 
+    $splattedArgs =     @{
+        PolicyFilePath = $JsonFilePath
+    }
+
+    if ($DefinitionLocation -eq "Subscription") {
+        $splattedArgs |Add-Member "SubscriptionId" $SubscriptionId
+    }elseif ($DefinitionLocation -eq "ManagementGroupName") {
+        $splattedArgs | Add-Member "ManagementGroupId" $ManagementGroupName
+    }
+
+
+    if($DeploymentType -eq "Full"){
+        
+    }elseif ($DeploymentType -eq "Splitted") {
+        
+    }
+
+    $ScriptTypeToRun = "Deploy$DeploymentType$GovernanceType"
+
+    Write-VstsTaskWarning "Trying to run $ScriptTypeToRun.ps1"
+
+    . "$PSScriptRoot\$ScriptTypeToRun.ps1" @splattedArgs
 }
 catch {
     $ErrorMessage = $_.Exception.Message
@@ -70,5 +105,7 @@ finally {
     if ($FileOrInline -eq 'Inline' -and (Test-Path $agentTmpPath)) {
         Remove-Item $agentTmpPath -Recurse       
     }
+
+
 }
     
