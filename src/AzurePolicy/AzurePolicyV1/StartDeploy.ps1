@@ -12,7 +12,7 @@ try {
 
     Import-VstsLocStrings "$PSScriptRoot/task.json"
 
-    Import-Module $PSScriptRoot\ps_modules\CommonScripts\VstsAzureHelpers_    
+    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_    
     . "$PSScriptRoot\ps_modules\CommonScripts\Utility.ps1"
 
     # get the tmp path of the agent
@@ -34,7 +34,7 @@ try {
         #get json string and check for valid json
         [string]$JsonInline = (Get-VstsInput -Name JsonInline)
 		
-        $JsonObject = New-Object System.Management.Automation.PSCustomObject
+        $JsonObject = New-Object -TypeName "PSCustomObject"
         try {
             $JsonFilePath = "$agentTmpPath/$tmpInlineJaonFileName"
             #if path not exists, create it!
@@ -45,9 +45,13 @@ try {
             $JsonObject | ConvertTo-Json -depth 100 | Out-File $JsonFilePath
         }
         catch [System.ArgumentException] {
-            throw "$($_.toString())"
+            Write-VstsTaskError -Message "$($_.toString())"
         }
     }
+
+    Write-VstsTaskWarning -Message "`$JsonObject: $JsonObject"
+    Write-VstsTaskWarning -Message "`$JsonFilePath :$JsonFilePath"
+    Write-VstsTaskWarning -Message "`$GovernanceType :$GovernanceType"
 
     #init azure connection
     Initialize-Azure
