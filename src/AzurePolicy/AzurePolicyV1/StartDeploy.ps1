@@ -75,7 +75,7 @@ try {
     }
 
     if ($DefinitionLocation -eq "Subscription") {
-        $splattedArgs |Add-Member "SubscriptionId" $SubscriptionId
+        $splattedArgs | Add-Member "SubscriptionId" $SubscriptionId
     }elseif ($DefinitionLocation -eq "ManagementGroupName") {
         $splattedArgs | Add-Member "ManagementGroupId" $ManagementGroupName
     }
