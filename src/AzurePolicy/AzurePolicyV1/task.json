@@ -137,6 +137,15 @@
             "visibleRule":"DeploymentType = Splitted"
         },
         {
+            "name": "Name",
+            "type": "string",
+            "label": "Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "You use the name to give it a unique identifier. Often a guid is used by Azure Policies but it can also be a more readable name.",
+            "visibleRule": "DeploymentType = Splitted"
+        },
+        {
             "name": "DisplayName",
             "type": "string",
             "label": "Display Name",
@@ -164,7 +173,7 @@
             "visibleRule": "DeploymentType = Splitted"
         },     
         {
-            "name": "Parameters",
+            "name": "ParametersFilePath",
             "type": "filePath",
             "label": "Parameters",
             "defaultValue": "",
@@ -173,7 +182,7 @@
             "visibleRule": "DeploymentType = Splitted"
         },
         {
-            "name": "PolicyRule",
+            "name": "PolicyRuleFilePath",
             "type": "filePath",
             "label": "Policy Rule",
             "defaultValue": "",
@@ -182,7 +191,7 @@
             "visibleRule": "DeploymentType = Splitted && GovernanceType = PolicyDefinition"
         },
         {
-            "name": "InitiativePolicyDefinitions",
+            "name": "InitiativePolicyDefinitionsFilePath",
             "type": "filePath",
             "label": "Policy Definitions",
             "defaultValue": "",
