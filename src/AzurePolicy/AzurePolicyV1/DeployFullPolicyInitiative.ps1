@@ -1,44 +1,37 @@
 ﻿[CmdletBinding(DefaultParameterSetName='Subscription')]
 param(
     [Parameter(Mandatory=$true, Position=0)]
-    [string]$PolicyFilePath,
+    [string]$InitiativeFilePath,
     [Parameter(Mandatory=$true, ParameterSetName='Subscription')]
     [string]$SubscriptionId,
     [Parameter(Mandatory=$true, ParameterSetName='ManagementGroup')]
     [string]$ManagementGroupId
 )
 
-$policy = Get-Content -Path $PolicyFilePath | Out-String | ConvertFrom-Json
-
-$policyJsonString = $policy | ConvertTo-Json -Depth 30 -Compress
-$policydefinitions = $policy.properties.policyDefinitions | ConvertTo-Json -Depth 30 -Compress
-$policysetparameters = $policy.properties.parameters | ConvertTo-Json -Depth 30 -Compress
-
-
-$name = $policy.name
-$displayName = $policy.properties.displayName
-$description = $policy.properties.description
-$metadata = $policy.properties.metadata | ConvertTo-Json -Depth 30 -Compress
-
-if($PSCmdlet.ParameterSetName -eq "Subscription"){
-
-    $policyset= Get-AzureRmPolicySetDefinition -Name $name -SubscriptionId $SubscriptionId
-
-    if($policyset){
-        $policyset = Set-AzureRmPolicySetDefinition -SubscriptionId $SubscriptionId -PolicyDefinition $policydefinitions -Name $name -Parameter $policysetparameters -DisplayName $displayName -Description $description -Metadata $metadata
-    }else{
-        $policyset = New-AzureRmPolicySetDefinition -SubscriptionId $SubscriptionId -PolicyDefinition $policydefinitions -Name $name -Parameter $policysetparameters -DisplayName $displayName -Description $description -Metadata $metadata
-    }
-
+if (-not (Test-Path $InitiativeFilePath)) {
+    throw "`nFile path '$InitiativeFilePath' for the initiative does not exist.`n"
 }else{
 
-    $policyset= Get-AzureRmPolicySetDefinition -Name $name -ManagementGroupName $ManagementGroupId
+    $initiative = Get-Content -Path $InitiativeFilePath | Out-String | ConvertFrom-Json
 
-    if($policyset){
-        $policyset = Set-AzureRmPolicySetDefinition -ManagementGroupName $ManagementGroupId -PolicyDefinition $policydefinitions -Name $name -Parameter $policysetparameters -DisplayName $displayName -Description $description -Metadata $metadata
-    }else{
-        $policyset = New-AzureRmPolicySetDefinition -ManagementGroupName $ManagementGroupId -PolicyDefinition $policydefinitions -Name $name -Parameter $policysetparameters -DisplayName $displayName -Description $description -Metadata $metadata
+    $initiativeParameters =  @{
+        PolicyDefinition =  $initiative.properties.policyDefinitions | ConvertTo-Json -Depth 30 -Compress
+        Name = $initiative.name
+        DisplayName = $initiative.properties.displayName
+        Description = $initiative.properties.description
+        Metadata = $initiative.properties.metadata | ConvertTo-Json -Depth 30 -Compress 
+        Parameter = $initiative.properties.parameters | ConvertTo-Json -Depth 30 -Compress
     }
-}
 
-Write-Verbose ($policyset | ConvertTo-Json)
+    if ($PSCmdlet.ParameterSetName -eq "Subscription") {
+
+        $initiativeParameters.SubscriptionId = $SubscriptionId
+
+    }elseif ($PSCmdlet.ParameterSetName -eq "ManagementGroup") {
+
+        $initiativeParameters.ManagementGroupId = $ManagementGroupName
+
+    }
+
+    . "$PSScriptRoot\DeploySplittedPolicyInitiative.ps1" @initiativeParameters
+}

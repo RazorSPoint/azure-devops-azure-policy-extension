@@ -24,16 +24,15 @@ if (-not (Test-Path $PolicyFilePath)) {
         PolicyRule = $policyDef.properties.policyRule | ConvertTo-Json -Depth 30 -Compress
     }
 
-    if ($PSCmdlet.ParameterSetName -eq "SubscriptionId") {
+    if ($PSCmdlet.ParameterSetName -eq "Subscription") {
 
-        $splattedArgs | Add-Member "SubscriptionId" $SubscriptionId
+        $splattedArgs.SubscriptionId = $SubscriptionId
 
-    }elseif ($PSCmdlet.ParameterSetName -eq "ManagementGroupId") {
+    }elseif ($PSCmdlet.ParameterSetName -eq "ManagementGroup") {
 
-        $splattedArgs | Add-Member "ManagementGroupId" $ManagementGroupName
+        $splattedArgs.ManagementGroupId = $ManagementGroupName
 
     }  
 
-    . "$PSScriptRoot\DeployPolicy.ps1" @splattedArgs
-
+    . "$PSScriptRoot\DeploySplittedPolicyDefinition.ps1" @splattedArgs
 }

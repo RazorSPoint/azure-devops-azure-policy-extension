@@ -1,44 +1,52 @@
 ﻿[CmdletBinding(DefaultParameterSetName='Subscription')]
 param(
-    [Parameter(Mandatory=$true, Position=0)]
-    [string]$PolicyFilePath,
     [Parameter(Mandatory=$true, ParameterSetName='Subscription')]
     [string]$SubscriptionId,
     [Parameter(Mandatory=$true, ParameterSetName='ManagementGroup')]
-    [string]$ManagementGroupId
+    [string]$ManagementGroupId,
+    [Parameter(Mandatory=$true, Position=0)]
+    [string]$Name,
+    [Parameter(Mandatory=$true, Position=1)]
+    [string]$DisplayName,
+    [Parameter(Mandatory=$true, Position=2)]
+    [string]$Description,
+    [Parameter(Mandatory=$true, Position=3)]
+    [string]$Metadata,
+    [Parameter(Mandatory=$true, Position=5)]
+    [string]$Parameters,
+    [Parameter(Mandatory=$true, Position=6)]
+    [string]$PolicyDefinition
 )
 
-$policy = Get-Content -Path $PolicyFilePath | Out-String | ConvertFrom-Json
+$initiativeParameters =  @{
+    PolicyDefinition =  $PolicyDefinition
+    Name = $Name
+    DisplayName = $DisplayName
+    Description = $Description
+    Metadata = $Metadata
+    Parameter = $Parameters
+}
 
-$policyJsonString = $policy | ConvertTo-Json -Depth 30 -Compress
-$policydefinitions = $policy.properties.policyDefinitions | ConvertTo-Json -Depth 30 -Compress
-$policysetparameters = $policy.properties.parameters | ConvertTo-Json -Depth 30 -Compress
-
-
-$name = $policy.name
-$displayName = $policy.properties.displayName
-$description = $policy.properties.description
-$metadata = $policy.properties.metadata | ConvertTo-Json -Depth 30 -Compress
+$scope = @{}
 
 if($PSCmdlet.ParameterSetName -eq "Subscription"){
 
-    $policyset= Get-AzureRmPolicySetDefinition -Name $name -SubscriptionId $SubscriptionId
+    $scope = @{ SubscriptionId = $SubscriptionId }   
 
-    if($policyset){
-        $policyset = Set-AzureRmPolicySetDefinition -SubscriptionId $SubscriptionId -PolicyDefinition $policydefinitions -Name $name -Parameter $policysetparameters -DisplayName $displayName -Description $description -Metadata $metadata
-    }else{
-        $policyset = New-AzureRmPolicySetDefinition -SubscriptionId $SubscriptionId -PolicyDefinition $policydefinitions -Name $name -Parameter $policysetparameters -DisplayName $displayName -Description $description -Metadata $metadata
-    }
+}elseif($PSCmdlet.ParameterSetName -eq "ManagementGroup"){
 
-}else{
-
-    $policyset= Get-AzureRmPolicySetDefinition -Name $name -ManagementGroupName $ManagementGroupId
-
-    if($policyset){
-        $policyset = Set-AzureRmPolicySetDefinition -ManagementGroupName $ManagementGroupId -PolicyDefinition $policydefinitions -Name $name -Parameter $policysetparameters -DisplayName $displayName -Description $description -Metadata $metadata
-    }else{
-        $policyset = New-AzureRmPolicySetDefinition -ManagementGroupName $ManagementGroupId -PolicyDefinition $policydefinitions -Name $name -Parameter $policysetparameters -DisplayName $displayName -Description $description -Metadata $metadata
-    }
+    $scope = @{ ManagementGroupName = $ManagementGroupId }   
 }
 
-Write-Verbose ($policyset | ConvertTo-Json)
+$policy = $null
+try{
+    $policy= Get-AzureRmPolicySetDefinition -Name $Name @scope -ErrorAction SilentlyContinue
+}catch{}  
+
+if($policy){
+    $policy = Set-AzureRmPolicySetDefinition @scope @initiativeParameters
+}else{
+    $policy = New-AzureRmPolicySetDefinition @scope @initiativeParameters
+}
+
+Write-VstsTaskVerbose ($policy | ConvertTo-Json)

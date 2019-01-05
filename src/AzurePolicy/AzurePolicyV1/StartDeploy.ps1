@@ -12,13 +12,11 @@ try {
 
     Import-VstsLocStrings "$PSScriptRoot/task.json"
 
-    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_    
-    . "$PSScriptRoot\ps_modules\CommonScripts\Utility.ps1"
+    $JsonFilePath = $null
 
     # get the tmp path of the agent
     $agentTmpPath = "$($env:AGENT_RELEASEDIRECTORY)\_temp"
-    $tmpInlineJsonFileName = [System.IO.Path]::GetRandomFileName() + ".json"
-
+    
     [string]$GovernanceType = Get-VstsInput -Name GovernanceType
 
     [string]$DefinitionLocation = Get-VstsInput -Name DefinitionLocation
@@ -28,68 +26,139 @@ try {
     [string]$ManagementGroupName = Get-VstsInput -Name ManagementGroupName
 
     [string]$DeploymentType = Get-VstsInput -Name DeploymentType
+  
 
-    [string]$FileOrInline = Get-VstsInput -Name FileOrInline
+    $splattedArgs = @{}
+    
+    if ($DeploymentType -eq "Full") {
 
-    if ($FileOrInline -eq "File") {
-        [string]$JsonFilePath = Get-VstsInput -Name JsonFilePath
-        if (-not (Test-Path $JsonFilePath)) {
-            Write-VstsTaskError -Message "`nFile path '$JsonFilePath' for parameter JsonFilePath does not exist.`n"
-        }
-    }
-    else {
-
-        #get json string and check for valid json
-        [string]$JsonInline = (Get-VstsInput -Name JsonInline)
-		
-        $JsonObject = New-Object -TypeName "PSCustomObject"
-        try {
-            $JsonFilePath = "$agentTmpPath/$tmpInlineJsonFileName"
-            #if path not exists, create it!
-            if (-not (Test-Path -Path $agentTmpPath)) {
-                New-Item -ItemType Directory -Force -Path $agentTmpPath
+        [string]$FileOrInline = Get-VstsInput -Name FileOrInline
+    
+        if ($FileOrInline -eq "File") {
+            [string]$JsonFilePath = Get-VstsInput -Name JsonFilePath
+            if (-not (Test-Path $JsonFilePath)) {
+                Write-VstsTaskError -Message "`nFile path '$JsonFilePath' for parameter JsonFilePath does not exist.`n"
             }
-            $JsonObject = ConvertFrom-Json -InputObject $JsonInline
-            $JsonObject | ConvertTo-Json -depth 100 | Out-File $JsonFilePath
         }
-        catch [System.ArgumentException] {
-            Write-VstsTaskError -Message "$($_.toString())"
+        else {
+            #get random temporary file name
+            $tmpInlineJsonFileName = [System.IO.Path]::GetRandomFileName() + ".json"
+
+            #get json string and check for valid json
+            [string]$JsonInline = (Get-VstsInput -Name JsonInline)
+            
+            $JsonObject = New-Object -TypeName "PSCustomObject"
+            try {
+                $JsonFilePath = "$agentTmpPath/$tmpInlineJsonFileName"
+                #if path not exists, create it!
+                if (-not (Test-Path -Path $agentTmpPath)) {
+                    New-Item -ItemType Directory -Force -Path $agentTmpPath
+                }
+                $JsonObject = ConvertFrom-Json -InputObject $JsonInline
+                $JsonObject | ConvertTo-Json -depth 100 | Out-File $JsonFilePath
+            }
+            catch [System.ArgumentException] {
+                Write-VstsTaskError -Message "$($_.toString())"
+            }
         }
-    }
 
-    Write-VstsTaskWarning -Message "`$JsonObject: $JsonObject"
-    Write-VstsTaskWarning -Message "`$JsonFilePath :$JsonFilePath"
-    Write-VstsTaskWarning -Message "`$GovernanceType :$GovernanceType"
-    Write-VstsTaskWarning -Message "`$DefinitionLocation :$DefinitionLocation"
-    Write-VstsTaskWarning -Message "`$SubscriptionId :$SubscriptionId"
-    Write-VstsTaskWarning -Message "`$ManagementGroupName :$ManagementGroupName"
-    Write-VstsTaskWarning -Message "`$DeploymentType :$DeploymentType"
-    Write-VstsTaskWarning -Message "`$FileOrInline :$FileOrInline"
+        $splattedArgs =     @{}
 
-    #init azure connection
-    Initialize-Azure
+        if ($GovernanceType -eq "PolicyDefinition") {
+            $splattedArgs.PolicyFilePath = $JsonFilePath
+        }elseif ($GovernanceType -eq "PolicyInitiative") {
+            $splattedArgs.InitiativeFilePath = $JsonFilePath
+        }
+        
 
+    }elseif ($DeploymentType -eq "Splitted") {       
+        [string]$ParametersFilePath = Get-VstsInput -Name ParametersFilePath
 
-    $splattedArgs =     @{
-        PolicyFilePath = $JsonFilePath
+        if (-not (Test-Path -LiteralPath $ParametersFilePath)) {
+            
+            Write-VstsTaskError -Message "`nFile path '$ParametersFilePath' for the Parameters does not exist.`n"
+        }
+
+        [string]$Category = Get-VstsInput -Name Category
+
+        $splattedArgs =     @{
+            Name = Get-VstsInput -Name Name            
+            DisplayName = Get-VstsInput -Name DisplayName
+            Description = Get-VstsInput -Name Description
+            Metadata =  "{ 'category': '$Category' }"
+            Parameters = Get-Content -Path $ParametersFilePath | Out-String
+        }
+
+        if ($GovernanceType -eq "PolicyDefinition") {
+
+            [string]$PolicyRuleFilePath = Get-VstsInput -Name PolicyRuleFilePath
+    
+            if (-not (Test-Path -LiteralPath $PolicyRuleFilePath)) {
+                Write-VstsTaskError -Message "`nFile path '$PolicyRuleFilePath' for the Policy Rule does not exist.`n"
+            }
+    
+            $splattedArgs.Mode = Get-VstsInput -Name Mode
+            $splattedArgs.PolicyRule = Get-Content -Path $PolicyRuleFilePath | Out-String 
+    
+        } elseif ($GovernanceType -eq "PolicyInitiative") {
+    
+            [string]$InitiativePolicyDefinitionsFilePath = Get-VstsInput -Name InitiativePolicyDefinitionsFilePath
+    
+            if (-not (Test-Path -LiteralPath $InitiativePolicyDefinitionsFilePath)) {
+                Write-VstsTaskError -Message "`nFile path '$InitiativePolicyDefinitionsFilePath' for the Policy Rule does not exist.`n"
+            }
+    
+            $splattedArgs.PolicyDefinition = Get-Content -Path $InitiativePolicyDefinitionsFilePath | Out-String  
+        }
     }
 
     if ($DefinitionLocation -eq "Subscription") {
-        $splattedArgs | Add-Member "SubscriptionId" $SubscriptionId
+        $splattedArgs.SubscriptionId = $SubscriptionId
     }elseif ($DefinitionLocation -eq "ManagementGroupName") {
-        $splattedArgs | Add-Member "ManagementGroupId" $ManagementGroupName
+        $splattedArgs.ManagementGroupId = $ManagementGroupName
+    }
+    
+    . "$PSScriptRoot\ps_modules\CommonScripts\Utility.ps1"
+    $targetAzurePs = Get-RollForwardVersion -azurePowerShellVersion $targetAzurePs
+
+    $authScheme = ''
+    try
+    {
+        $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'ConnectedServiceName'
+        $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
+        if (!$serviceName)
+        {
+                Get-VstsInput -Name $serviceNameInput -Require
+        }
+    
+        $endpoint = Get-VstsEndpoint -Name $serviceName -Require
+    
+        if($endpoint)
+        {
+            $authScheme = $endpoint.Auth.Scheme 
+        }
+    
+         Write-Verbose "AuthScheme $authScheme"
+    }
+    catch
+    {
+       $error = $_.Exception.Message
+       Write-Verbose "Unable to get the authScheme $error" 
     }
 
+    ## Real things are happening here
 
-    if($DeploymentType -eq "Full"){
-        
-    }elseif ($DeploymentType -eq "Splitted") {
-        
-    }
+    Update-PSModulePathForHostedAgent -targetAzurePs $targetAzurePs -authScheme $authScheme
 
+    #init azure connection
+    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
+    Initialize-Azure -azurePsVersion "6.13.0" -strict
+ 
+    #Use Options DeploymentType and GovernanceType to generate the correct script to call
     $ScriptTypeToRun = "Deploy$DeploymentType$GovernanceType"
 
-    Write-VstsTaskWarning "Trying to run $ScriptTypeToRun.ps1"
+    Write-VstsTaskWarning "Trying to run $ScriptTypeToRun.ps1 with parameters"
+    $splattedArgs
 
     . "$PSScriptRoot\$ScriptTypeToRun.ps1" @splattedArgs
 }
@@ -100,12 +169,13 @@ catch {
 }
 finally {
     Trace-VstsLeavingInvocation $MyInvocation
-
     #clean up tmp path
-    if ($FileOrInline -eq 'Inline' -and (Test-Path $agentTmpPath)) {
-        Remove-Item $agentTmpPath -Recurse       
+    if ($FileOrInline -eq 'Inline' -and (Test-Path -LiteralPath $JsonFilePath)) {
+        Remove-Item -LiteralPath $JsonFilePath -ErrorAction 'SilentlyContinue'
     }
 
-
+    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
+    Remove-EndpointSecrets
+    Disconnect-AzureAndClearContext -authScheme $authScheme -ErrorAction SilentlyContinue
 }
-    
+

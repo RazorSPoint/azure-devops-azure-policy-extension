@@ -21,31 +21,36 @@ param(
     [string]$PolicyRule
 )
 
+$policyParameter =  @{
+    Policy = $PolicyRule 
+    Name = $Name 
+    DisplayName = $DisplayName 
+    Description = $Description 
+    Mode = $Mode 
+    Metadata = $Metadata 
+    Parameter = $Parameters
+}
+
+$scope = @{}
+
 if($PSCmdlet.ParameterSetName -eq "Subscription"){
 
-    $policy = $null
-    try{
-        $policy= Get-AzureRmPolicyDefinition -Name $Name -SubscriptionId $SubscriptionId -ErrorAction SilentlyContinue
-    }catch{}  
-
-    if($policy){
-        $policy = Set-AzureRmPolicyDefinition -SubscriptionId $SubscriptionId -Policy $PolicyRule -Name $Name -DisplayName $DisplayName -Description $Description -Mode $Mode -Metadata $Metadata -Parameter $Parameters
-    }else{
-        $policy = New-AzureRmPolicyDefinition -SubscriptionId $SubscriptionId -Policy $PolicyRule -Name $Name -DisplayName $DisplayName -Description $Description -Mode $Mode -Metadata $Metadata -Parameter $Parameters
-    }
+    $scope = @{ SubscriptionId = $SubscriptionId }   
 
 }elseif($PSCmdlet.ParameterSetName -eq "ManagementGroup"){
 
-    $policy = $null
-    try{
-        $policy= Get-AzureRmPolicyDefinition -Name $Name -ManagementGroupName $ManagementGroupId -ErrorAction SilentlyContinue
-    }catch{}
+    $scope = @{ ManagementGroupName = $ManagementGroupId }   
+}
 
-    if($policy){
-        $policy = Set-AzureRmPolicyDefinition -ManagementGroupName $ManagementGroupId -Policy $PolicyRule -Name $Name -DisplayName $DisplayName -Description $Description -Mode $Mode -Metadata $Metadata -Parameter $Parameters
-    }else{
-        $policy = New-AzureRmPolicyDefinition -ManagementGroupName $ManagementGroupId -Policy $PolicyRule -Name $Name -DisplayName $DisplayName -Description $Description -Mode $Mode -Metadata $Metadata -Parameter $Parameters
-    }
+$policy = $null
+try{
+    $policy= Get-AzureRmPolicyDefinition -Name $Name @scope -ErrorAction SilentlyContinue
+}catch{}  
+
+if($policy){
+    $policy = Set-AzureRmPolicyDefinition @scope @policyParameter
+}else{
+    $policy = New-AzureRmPolicyDefinition @scope @policyParameter
 }
 
 Write-VstsTaskVerbose ($policy | ConvertTo-Json)
