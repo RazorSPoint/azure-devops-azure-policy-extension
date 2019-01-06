@@ -26,7 +26,6 @@ $policyParameter =  @{
     Name = $Name 
     DisplayName = $DisplayName 
     Description = $Description 
-    Mode = $Mode 
     Metadata = $Metadata 
     Parameter = $Parameters
 }
@@ -44,13 +43,20 @@ if($PSCmdlet.ParameterSetName -eq "Subscription"){
 
 $policy = $null
 try{
+
     $policy= Get-AzureRmPolicyDefinition -Name $Name @scope -ErrorAction SilentlyContinue
+    
 }catch{}  
 
 if($policy){
+
     $policy = Set-AzureRmPolicyDefinition @scope @policyParameter
+
 }else{
+
+    $policyParameter.Mode = $Mode 
     $policy = New-AzureRmPolicyDefinition @scope @policyParameter
+
 }
 
 Write-VstsTaskVerbose ($policy | ConvertTo-Json)

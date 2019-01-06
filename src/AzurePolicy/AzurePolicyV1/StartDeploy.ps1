@@ -152,7 +152,7 @@ try {
 
     #init azure connection
     Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
-    Initialize-Azure -azurePsVersion "6.13.0" -strict
+    Initialize-Azure -azurePsVersion $targetAzurePs -strict
  
     #Use Options DeploymentType and GovernanceType to generate the correct script to call
     $ScriptTypeToRun = "Deploy$DeploymentType$GovernanceType"
