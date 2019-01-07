@@ -40,12 +40,15 @@ if($PSCmdlet.ParameterSetName -eq "Subscription"){
 
 $policy = $null
 try{
+    Write-Output "Checking if the policy set (Intiative) '$Name' already exists."
     $policy= Get-AzureRmPolicySetDefinition -Name $Name @scope -ErrorAction SilentlyContinue
 }catch{}  
 
 if($policy){
+    Write-Output "Policy set (Intiative) '$Name' exists and will be updated."
     $policy = Set-AzureRmPolicySetDefinition @scope @initiativeParameters
 }else{
+    Write-Output "Policy set (Intiative) '$Name' does not exist and will be created."
     $policy = New-AzureRmPolicySetDefinition @scope @initiativeParameters
 }
 

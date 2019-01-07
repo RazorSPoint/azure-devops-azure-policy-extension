@@ -43,17 +43,17 @@ if($PSCmdlet.ParameterSetName -eq "Subscription"){
 
 $policy = $null
 try{
-
+    Write-Output "Checking if the policy '$Name' already exists."
     $policy= Get-AzureRmPolicyDefinition -Name $Name @scope -ErrorAction SilentlyContinue
     
 }catch{}  
 
 if($policy){
-
+    Write-Output "Policy '$Name' exists and will be updated."
     $policy = Set-AzureRmPolicyDefinition @scope @policyParameter
 
 }else{
-
+    Write-Output "Policy '$Name' does not exist and will be created."
     $policyParameter.Mode = $Mode 
     $policy = New-AzureRmPolicyDefinition @scope @policyParameter
 

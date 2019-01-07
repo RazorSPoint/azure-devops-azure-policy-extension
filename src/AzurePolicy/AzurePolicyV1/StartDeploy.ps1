@@ -27,8 +27,8 @@ try {
 
     [string]$DeploymentType = Get-VstsInput -Name DeploymentType
   
-
     $splattedArgs = @{}
+  
     
     if ($DeploymentType -eq "Full") {
 
@@ -157,8 +157,7 @@ try {
     #Use Options DeploymentType and GovernanceType to generate the correct script to call
     $ScriptTypeToRun = "Deploy$DeploymentType$GovernanceType"
 
-    Write-VstsTaskWarning "Trying to run $ScriptTypeToRun.ps1 with parameters"
-    $splattedArgs
+    Write-Output ""
 
     . "$PSScriptRoot\$ScriptTypeToRun.ps1" @splattedArgs
 }
