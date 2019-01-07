@@ -64,11 +64,14 @@
         },
         {
             "path": "Images/Preview03.png"
+        },
+        {
+            "path": "Images/Preview04.png"
         }
     ],
     "branding": {
         "color": "rgb(50,49,48)",
-        "theme": "light"
+        "theme": "dark"
     },
     "scopes": [
         "vso.build_execute"
