@@ -1,18 +1,10 @@
 # <a id="Change-Log"> </a> Change Log
 
-## 1.0.0
-
-### Mayor changes
-
-- A Change
+## 0.3.0
 
 ### Minor Changes
 
-- A Change
-
-### Bug Fixes
-
-- A Change
+- Release of first preview of Azure Policy tasks
 
 
 

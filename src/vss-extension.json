@@ -12,8 +12,8 @@
         "Azure Pipelines"
     ],
     "tags": [
-        "Azure Policy", "Blueprint","Initiative","Management Groups",
-        "Governance", "Deployment","Compliance"
+        "Azure Policy", "Blueprint","Initiative","Policy Set","Management Groups",
+        "Governance", "Deployment","Compliance", "RazorSPoint","Conventions"
     ],
     "icons": {
         "default": "Images/Icon128x128.png",
@@ -64,11 +64,14 @@
         },
         {
             "path": "Images/Preview03.png"
+        },
+        {
+            "path": "Images/Preview04.png"
         }
     ],
     "branding": {
         "color": "rgb(50,49,48)",
-        "theme": "light"
+        "theme": "dark"
     },
     "scopes": [
         "vso.build_execute"
