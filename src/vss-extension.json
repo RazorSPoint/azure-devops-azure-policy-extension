@@ -12,7 +12,7 @@
         "Azure Pipelines"
     ],
     "galleryFlags": [
-        "Public"
+        "Public",
         "Preview"
     ],
     "tags": [
