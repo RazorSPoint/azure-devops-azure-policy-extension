@@ -14,7 +14,7 @@
     "galleryFlags": [
         "Public"
         "Preview"
-    ]
+    ],
     "tags": [
         "Azure Policy", "Blueprint","Initiative","Policy Set","Management Groups",
         "Governance", "Deployment","Compliance", "RazorSPoint","Conventions"
