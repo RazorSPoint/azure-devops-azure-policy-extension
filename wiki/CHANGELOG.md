@@ -1,5 +1,11 @@
 # <a id="Change-Log"> </a> Change Log
 
+## 0.3.4
+
+### Patch
+
+- Fixed a problem that didn't allow to deploy policy definitions with a management group scope
+
 ## 0.3.0
 
 ### Minor Changes
