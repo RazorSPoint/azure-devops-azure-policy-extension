@@ -114,7 +114,7 @@ try {
 
     if ($DefinitionLocation -eq "Subscription") {
         $splattedArgs.SubscriptionId = $SubscriptionId
-    }elseif ($DefinitionLocation -eq "ManagementGroupName") {
+    }elseif ($DefinitionLocation -eq "ManagementGroup") {
         $splattedArgs.ManagementGroupId = $ManagementGroupName
     }
     
@@ -156,7 +156,7 @@ try {
  
     #Use Options DeploymentType and GovernanceType to generate the correct script to call
     $ScriptTypeToRun = "Deploy$DeploymentType$GovernanceType"
-
+    
     Write-Output ""
 
     . "$PSScriptRoot\$ScriptTypeToRun.ps1" @splattedArgs

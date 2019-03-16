@@ -2,7 +2,7 @@
     "id": "ef6e39d1-dbac-47e0-8c6b-f5735aaa4096",
     "name": "DeployAzureGovernance",
     "friendlyName": "Deploy Azure Governance",
-    "description": "Deploys Azure governance definitions like policies, nitiatives or blueprints.",
+    "description": "Deploys Azure governance definitions like policies, Initiatives or blueprints.",
     "author": "Sebastian Schütze",
     "helpMarkDown": "Azure Policy is a service in Azure that you use to create, assign and, manage policies. These policies enforce different rules and effects over your resources, so those resources stay compliant with your corporate standards and service level agreements. It uses the Azure PowerShell Module to deploy the definitions.<br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/overview)",
     "category": "Deploy",
@@ -63,7 +63,7 @@
             "type": "string",
             "label": "Subscription Id",
             "defaultValue": "",
-            "required": false,
+            "required": true,
             "helpMarkDown": "Id of the subscription. Only resources within that subscription can be assigned the policy.",
             "visibleRule": "DefinitionLocation = Subscription"
         },
@@ -72,7 +72,7 @@
             "type": "string",
             "label": "Management Group Id",
             "defaultValue": "",
-            "required": false,
+            "required": true,
             "helpMarkDown": "Id of the management group. Only resources within child management groups and child subscriptions can be assigned the policy. If you plan to apply the policy definition to several subscriptions, the location must be a management group that contains those subscriptions.",
             "visibleRule": "DefinitionLocation = ManagementGroup"
         },
