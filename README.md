@@ -17,13 +17,21 @@ This extension includes a group of tasks that can deploy Azure Policies and Init
 
 This task is intended to make it easier for you to publish Azure Policies and Policy Sets (Initiatives) to your azure tenant.
 
-This tasks needs a Azure Resource Manager service connection with a properly configured service principal. You can go forward and use Azure DevOps to create a service connection, by choosing the subscription.
+This tasks needs a Azure Resource Manager service connection with a properly configured service principal. You can go forward and use Azure DevOps to create a service connection, by choosing any subscription.
 
 ![](src/images/AzurePolicyTask/AzurePolicyTask03.png)
 
-Or you can go the more manual way and create an AAD application with Service Principal yourself and add the information into the advanced service connection form.
+**Note:**: Since we will create a service principal that needs access to management groups, we will customize the connection before creating. Since we will use the advanced options (see below)
 
-Either way, the service principal must be added to the root management group. Additionally, you can only use the roles "Owner" or "Resource Policy Contributor" (the latter is recommended). These roles are the only one that have write permissions for policies. With these settings in place, they can deploy to any management group or subscription scope that has been defined in the task.
+![](src/images/AzurePolicyTask/AzurePolicyTask04.png)
+
+In the customizable configuration (image below) you choose the scope level "ManagementGroup". Then you should choose a proper connection name and a management group. Since the chosen management group only defines the permission of the service principal and **not** the scope of anything you deploy you should set it to the highest group where you want to be able to deploy everything to (for me mostly the root tenant group).
+
+![](src/images/AzurePolicyTask/AzurePolicyTask05.png)
+
+Alternatively, you can go the more manual way and create an AAD application with Service Principal yourself and add the information into the advanced service connection form.
+
+Either way, the service principal must be added to highest group where you want to be able to deploy. Additionally, you can only use the roles "Owner" or "Resource Policy Contributor" (the latter is recommended, but in preview). These roles are the only one that have write permissions for policies. With these settings in place, they can deploy to any management group or subscription scope that has been defined in the task.
 
 ![](src/images/AzurePolicyTask/AzurePolicyTask01.png)
 
@@ -32,8 +40,8 @@ Either way, the service principal must be added to the root management group. Ad
 #### Governance Type
 Choose if you either want to deploy a policy or a policy set.
 
-#### Azure Subscription
-Choose a subscription with a created service principal, which has the proper permission as explained earlier above.
+#### Azure Management Group Connection
+Choose a connection that creates a service principal which is assigned to a management group, which has the proper permission as explained earlier above. For how to do it, check explanation above!
 
 #### Definition Location
 Choose the scope of the policy, which can be either scoped to a management group id or a subscription id.
