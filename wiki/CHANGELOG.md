@@ -5,6 +5,7 @@
 ### Patch
 
 - Fixed a problem that didn't allow to deploy policy definitions with a management group scope
+- fixed ps modules path used in the extension
 
 ## 0.3.0
 
