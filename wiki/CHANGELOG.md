@@ -1,5 +1,11 @@
 # <a id="Change-Log"> </a> Change Log
 
+## 0.4.0
+
+### Minor
+
+- Changed the azure connection to only use scope levels of "ManagementGroup".
+
 ## 0.3.4
 
 ### Patch
