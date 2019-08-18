@@ -12,7 +12,7 @@ queue:
   demands: npm
 
 steps:
-- task: gittools.gitversion.gitversion-task.GitVersion@4
+- task: GitVersion@4
   displayName: GitVersion
   inputs:
     preferBundledVersion: false
@@ -43,7 +43,8 @@ steps:
 - powershell: '$(Build.SourcesDirectory)/tools/GenerateChangelog.ps1'
   displayName: 'Generate Extension Readme.md'
 
-- task: geeklearningio.gl-vsts-tasks-file-patch.json-patch-task.JsonPatch@3
+
+- task: JsonPatch@3
   displayName: 'Patch Azure Policy task.json'
   inputs:
     JsonWorkingDir: '$(Build.SourcesDirectory)/src/AzurePolicy/AzurePolicyV1'
@@ -55,7 +56,7 @@ steps:
   inputs:
     version: 'v0.6.x'
 
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+- task: PackageVSTSExtension@1
   displayName: 'Package Extension for every branch except master'
   inputs:
     rootFolder: src
@@ -64,7 +65,7 @@ steps:
 
   condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
 
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+- task: PackageVSTSExtension@1
   displayName: 'Package Extension for refs/heads/master only'
   inputs:
     rootFolder: src
