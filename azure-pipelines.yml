@@ -17,8 +17,7 @@ steps:
   inputs:
     preferBundledVersion: false
 
-
-- task: Pester@
+- task: Pester@8
   displayName: 'Pester Test Runner'
   inputs:
     scriptFolder: "@{Path=''$(Build.SourcesDirectory)'; Parameters=@{AgentToolPath ='$(Agent.WorkFolder)'}}"
