@@ -18,7 +18,7 @@ steps:
     preferBundledVersion: false
 
 
-- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+- task: Pester@
   displayName: 'Pester Test Runner'
   inputs:
     scriptFolder: "@{Path=''$(Build.SourcesDirectory)'; Parameters=@{AgentToolPath ='$(Agent.WorkFolder)'}}"
