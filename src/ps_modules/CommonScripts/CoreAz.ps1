@@ -9,10 +9,10 @@ param
 )
 
 Import-Module "$PSScriptRoot\..\VstsTaskSdk" -ArgumentList @{ NonInteractive = $true }
-Import-VstsLocStrings -LiteralPath "$PSScriptRoot\task.json"
+#Import-VstsLocStrings -LiteralPath "$PSScriptRoot\..\..\task.json"
 
 # Update PSModulePath for hosted agent
-. "$PSScriptRoot\Utility.ps1"
+. "$PSScriptRoot\ModuleUtility.ps1"
 CleanUp-PSModulePathForHostedAgent
 Update-PSModulePathForHostedAgent -targetAzurePs $targetAzurePs
 

@@ -1,5 +1,5 @@
 # if not logged in, run the login
- tfx login -u https://dev.azure.com/razorspoint-test
+tfx login -u https://dev.azure.com/razorspoint-test
 
 # upload the deploy azure policy task
 tfx build tasks upload --task-path ./src/AzurePolicy/AzurePolicyV1
