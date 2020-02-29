@@ -4,7 +4,7 @@
     "friendlyName": "Deploy Azure Initiative",
     "description": "Deploys Azure initiative.",
     "author": "Sebastian Schütze",
-    "helpMarkDown": "Azure Initiative is a service in Azure that you use to create, assign and, manage a set of policies. These policies enforce different rules and effects over your resources, so those resources stay compliant with your corporate standards and service level agreements. It uses the Azure PowerShell Module to deploy the definitions.<br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/overview)",
+    "helpMarkDown": "Azure Initiative is a service in Azure that you use to create, assign and, manage a set of policies. These policies enforce different rules and effects over your resources, so those resources stay compliant with your corporate standards and service level agreements. It uses the Azure PowerShell Module to deploy the definitions.<br/><br/>[More Information](https://docs.microsoft.com/azure/governance/policy/overview)",
     "category": "Deploy",
     "visibility": [
         "Build",
@@ -43,7 +43,7 @@
             "label": "Definition Location",
             "defaultValue": "ManagementGroup",
             "required": true,
-            "helpMarkDown": "While creating an initiative or policy, it's necessary to specify the definition location. The definition location must be a management group or a subscription. This location determines the scope to which the initiative or policy can be assigned. Resources must be direct members of or children within the hierarchy of the definition location to target for assignment.<br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure#mode)",
+            "helpMarkDown": "While creating an initiative or policy, it's necessary to specify the definition location. The definition location must be a management group or a subscription. This location determines the scope to which the initiative or policy can be assigned. Resources must be direct members of or children within the hierarchy of the definition location to target for assignment.<br/><br/>[More Information](https://docs.microsoft.com/azure/governance/policy/concepts/definition-structure#mode)",
             "options": {
                 "Subscription": "Subscription ",
                 "ManagementGroup": "Management group"
@@ -120,7 +120,7 @@
             "label": "Mode",
             "defaultValue": "Full",
             "required": true,
-            "helpMarkDown": "The mode determines which resource types will be evaluated for a policy. The supported modes are:<br/><br/> <ul><li>all: evaluate resource groups and all resource types</li><li>indexed: only evaluate resource types that support tags and location</li></ul><br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure#mode)",
+            "helpMarkDown": "The mode determines which resource types will be evaluated for a policy. The supported modes are:<br/><br/> <ul><li>all: evaluate resource groups and all resource types</li><li>indexed: only evaluate resource types that support tags and location</li></ul><br/><br/>[More Information](https://docs.microsoft.com/azure/governance/policy/concepts/definition-structure#mode)",
             "options": {
                 "all": "all",
                 "indexed": "indexed"
@@ -169,7 +169,7 @@
             "label": "Parameters",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Parameters help simplify your policy management by reducing the number of policy definitions. Think of parameters like the fields on a form – name, address, city, state. These parameters always stay the same, however their values change based on the individual filling out the form. Parameters work the same way when building policies. By including parameters in a policy definition, you can reuse that policy for different scenarios by using different values.<br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure#parameters)",
+            "helpMarkDown": "Parameters help simplify your policy management by reducing the number of policy definitions. Think of parameters like the fields on a form – name, address, city, state. These parameters always stay the same, however their values change based on the individual filling out the form. Parameters work the same way when building policies. By including parameters in a policy definition, you can reuse that policy for different scenarios by using different values.<br/><br/>[More Information](https://docs.microsoft.com/azure/governance/policy/concepts/definition-structure#parameters)",
             "visibleRule": "DeploymentType = Splitted"
         },
         {
@@ -178,7 +178,7 @@
             "label": "Policy Definitions",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "An array of policy definitions to group into the initiative. <br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure#initiatives)",
+            "helpMarkDown": "An array of policy definitions to group into the initiative. <br/><br/>[More Information](https://docs.microsoft.com/azure/governance/policy/concepts/definition-structure#initiatives)",
             "visibleRule": "DeploymentType = Splitted"
         }
     ],
