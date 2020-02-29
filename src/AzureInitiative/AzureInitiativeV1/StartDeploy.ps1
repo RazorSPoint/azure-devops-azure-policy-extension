@@ -1,20 +1,22 @@
 Trace-VstsEnteringInvocation $MyInvocation
-#Import-VstsLocStrings "$PSScriptRoot/task.json"
+
+
+Import-VstsLocStrings "$PSScriptRoot/task.json"
 
 $JsonFilePath = $null
 
 # get the tmp path of the agent
 $agentTmpPath = "$($env:AGENT_RELEASEDIRECTORY)\_temp"
-
+    
 [string]$DefinitionLocation = Get-VstsInput -Name DefinitionLocation
 [string]$SubscriptionId = Get-VstsInput -Name SubscriptionId
 [string]$ManagementGroupName = Get-VstsInput -Name ManagementGroupName
-[string]$DeploymentType = Get-VstsInput -Name DeploymentType -Require
-
-$splattedArgs = @{}
-
+[string]$DeploymentType = Get-VstsInput -Name DeploymentType
+  
+$splattedArgs = @{ }
+  
 try {
-
+  
     if ($DeploymentType -eq "Full") {
 
         [string]$FileOrInline = Get-VstsInput -Name FileOrInline
@@ -47,11 +49,12 @@ try {
             }
         }
 
-        $splattedArgs =     @{}
+        $splattedArgs = @{ }
+        
+        $splattedArgs.InitiativeFilePath = $JsonFilePath       
 
-        $splattedArgs.PolicyFilePath = $JsonFilePath      
-
-    }elseif ($DeploymentType -eq "Splitted") {       
+    }
+    elseif ($DeploymentType -eq "Splitted") {       
         [string]$ParametersFilePath = Get-VstsInput -Name ParametersFilePath
 
         if (-not (Test-Path -LiteralPath $ParametersFilePath)) {
@@ -61,29 +64,29 @@ try {
 
         [string]$Category = Get-VstsInput -Name Category
 
-        $splattedArgs =     @{
-            Name = Get-VstsInput -Name Name            
+        $splattedArgs = @{
+            Name        = Get-VstsInput -Name Name            
             DisplayName = Get-VstsInput -Name DisplayName
             Description = Get-VstsInput -Name Description
-            Metadata =  "{ 'category': '$Category' }"
-            Parameters = Get-Content -Path $ParametersFilePath | Out-String
+            Metadata    = "{ 'category': '$Category' }"
+            Parameters  = Get-Content -Path $ParametersFilePath | Out-String
         }
 
 
-        [string]$PolicyRuleFilePath = Get-VstsInput -Name PolicyRuleFilePath
 
-        if (-not (Test-Path -LiteralPath $PolicyRuleFilePath)) {
-            Write-VstsTaskError -Message "`nFile path '$PolicyRuleFilePath' for the Policy Rule does not exist.`n"
-        }
-
-        $splattedArgs.Mode = Get-VstsInput -Name Mode
-        $splattedArgs.PolicyRule = Get-Content -Path $PolicyRuleFilePath | Out-String 
+        [string]$InitiativePolicyDefinitionsFilePath = Get-VstsInput -Name InitiativePolicyDefinitionsFilePath
     
+        if (-not (Test-Path -LiteralPath $InitiativePolicyDefinitionsFilePath)) {
+            Write-VstsTaskError -Message "`nFile path '$InitiativePolicyDefinitionsFilePath' for the Policy Rule does not exist.`n"
+        }
+    
+        $splattedArgs.PolicyDefinition = Get-Content -Path $InitiativePolicyDefinitionsFilePath | Out-String  
     }
 
     if ($DefinitionLocation -eq "Subscription") {
         $splattedArgs.SubscriptionId = $SubscriptionId
-    }elseif ($DefinitionLocation -eq "ManagementGroup") {
+    }
+    elseif ($DefinitionLocation -eq "ManagementGroup") {
         $splattedArgs.ManagementGroupId = $ManagementGroupName
     }
     
@@ -93,11 +96,15 @@ try {
     $endpointObject = Get-VstsEndpoint -Name $serviceName -Require
     $endpoint = ConvertTo-Json $endpointObject
 
-    . $PSScriptRoot\ps_modules\CommonScripts\CoreAz.ps1 -endpoint "$endpoint"   
-
+    . $PSScriptRoot\ps_modules\CommonScripts\CoreAz.ps1 -endpoint "$endpoint"  
     ## Real things are happening here
-    . "$PSScriptRoot\Deploy$($DeploymentType)PolicyDefinition.ps1" @splattedArgs
 
+    #Use Options DeploymentType and GovernanceType to generate the correct script to call
+    $ScriptTypeToRun = "Deploy$DeploymentType$GovernanceType"
+    
+    Write-Output ""
+
+    . "$PSScriptRoot\Deploy$($DeploymentType)PolicyInitiative.ps1" @splattedArgs
 }
 catch {
     $ErrorMessage = $_.Exception.Message

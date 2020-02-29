@@ -1,8 +1,8 @@
 {
-    "id": "ef6e39d1-dbac-47e0-8c6b-f5735aaa4096",
-    "name": "DeployAzureGovernance",
-    "friendlyName": "Deploy Azure Governance",
-    "description": "Deploys Azure governance definitions like policies.",
+    "id": "28825f8c-9d9c-4561-8d2a-429aa4ca7271",
+    "name": "DeployAzureIniative",
+    "friendlyName": "Deploy Azure Initiative",
+    "description": "Deploys Azure initiative.",
     "author": "Sebastian Schütze",
     "helpMarkDown": "Azure Policy is a service in Azure that you use to create, assign and, manage policies. These policies enforce different rules and effects over your resources, so those resources stay compliant with your corporate standards and service level agreements. It uses the Azure PowerShell Module to deploy the definitions.<br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/overview)",
     "category": "Deploy",
@@ -11,9 +11,9 @@
     ],
     "demands": ["PowerShell","AzurePS"],
     "version": {
-        "Major": "1",
-        "Minor": "0",
-        "Patch": "0"
+        "Major": "0",
+        "Minor": "5",
+        "Patch": "3"
     },
     "preview": true,
     "minimumAgentVersion": "2.115.0",
@@ -23,7 +23,18 @@
         "isExpanded": false
     }],
     "instanceNameFormat": "Deploy Governance for $(GovernanceType)",
-    "inputs": [
+    "inputs": [{
+            "name": "GovernanceType",
+            "type": "radio",
+            "label": "Governance Type",
+            "defaultValue": "PolicyDefinition",
+            "required": true,
+            "helpMarkDown": "The type of governance that should be deployed.",
+            "options": {
+                "PolicyDefinition": "Policy Definition",
+                "PolicyInitiative": "Policy Initiative"
+            }
+        },
         {
             "name": "ConnectedServiceName",
             "aliases": [
@@ -44,7 +55,7 @@
             "label": "Definition Location",
             "defaultValue": "ManagementGroup",
             "required": true,
-            "helpMarkDown": "While creating an policy, it's necessary to specify the definition location. The definition location must be a management group or a subscription. This location determines the scope to which the policy can be assigned. Resources must be direct members of or children within the hierarchy of the definition location to target for assignment.<br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure#mode)",
+            "helpMarkDown": "While creating an initiative or policy, it's necessary to specify the definition location. The definition location must be a management group or a subscription. This location determines the scope to which the initiative or policy can be assigned. Resources must be direct members of or children within the hierarchy of the definition location to target for assignment.<br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure#mode)",
             "options": {
                 "Subscription": "Subscription ",
                 "ManagementGroup": "Management group"
@@ -181,7 +192,16 @@
             "required": true,
             "helpMarkDown": "The policy rule consists of If and Then blocks. In the If block, you define one or more conditions that specify when the policy is enforced.<br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure#policy-rule)",
             "visibleRule": "DeploymentType = Splitted && GovernanceType = PolicyDefinition"
-        }    
+        },
+        {
+            "name": "InitiativePolicyDefinitionsFilePath",
+            "type": "filePath",
+            "label": "Policy Definitions",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "An array of policy definitions to group into the initiative. <br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure#initiatives)",
+            "visibleRule": "DeploymentType = Splitted && GovernanceType = PolicyInitiative"
+        }
     ],
     "execution": {
         "PowerShell3": {

@@ -4,6 +4,9 @@
 # upload the deploy azure policy task
 tfx build tasks upload --task-path ./src/AzurePolicy/AzurePolicyV1
 
+# upload the deploy azure initiative task
+tfx build tasks upload --task-path ./src/AzureInitiative/AzureInitiativeV1
+
 # delete the task
 tfx build tasks delete --task-id ef6e39d1-dbac-47e0-8c6b-f5735aaa4096
 
