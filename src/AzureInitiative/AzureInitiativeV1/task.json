@@ -21,11 +21,6 @@
     },
     "preview": true,
     "minimumAgentVersion": "2.115.0",
-    "groups": [{
-        "name": "advanced",
-        "displayName": "Advanced",
-        "isExpanded": false
-    }],
     "instanceNameFormat": "Deploy Azure Initiative",
     "inputs": [
         {
