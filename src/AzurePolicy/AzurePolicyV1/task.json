@@ -7,9 +7,13 @@
     "helpMarkDown": "Azure Policy is a service in Azure that you use to create, assign and, manage policies. These policies enforce different rules and effects over your resources, so those resources stay compliant with your corporate standards and service level agreements. It uses the Azure PowerShell Module to deploy the definitions.<br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/overview)",
     "category": "Deploy",
     "visibility": [
+        "Build",
         "Release"
     ],
-    "demands": ["PowerShell","AzurePS"],
+    "runsOn": [
+        "Agent",
+        "DeploymentGroup"
+    ],
     "version": {
         "Major": "1",
         "Minor": "0",

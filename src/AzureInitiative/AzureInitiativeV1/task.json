@@ -7,13 +7,17 @@
     "helpMarkDown": "Azure Initiative is a service in Azure that you use to create, assign and, manage a set of policies. These policies enforce different rules and effects over your resources, so those resources stay compliant with your corporate standards and service level agreements. It uses the Azure PowerShell Module to deploy the definitions.<br/><br/>[More Information](https://docs.microsoft.com/en-us/azure/governance/policy/overview)",
     "category": "Deploy",
     "visibility": [
+        "Build",
         "Release"
     ],
-    "demands": ["PowerShell","AzurePS"],
+    "runsOn": [
+        "Agent",
+        "DeploymentGroup"
+    ],
     "version": {
-        "Major": "0",
-        "Minor": "5",
-        "Patch": "3"
+        "Major": "1",
+        "Minor": "0",
+        "Patch": "0"
     },
     "preview": true,
     "minimumAgentVersion": "2.115.0",
