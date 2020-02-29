@@ -98,12 +98,6 @@ try {
 
     . $PSScriptRoot\ps_modules\CommonScripts\CoreAz.ps1 -endpoint "$endpoint"  
     ## Real things are happening here
-
-    #Use Options DeploymentType and GovernanceType to generate the correct script to call
-    $ScriptTypeToRun = "Deploy$DeploymentType$GovernanceType"
-    
-    Write-Output ""
-
     . "$PSScriptRoot\Deploy$($DeploymentType)PolicyInitiative.ps1" @splattedArgs
 }
 catch {
