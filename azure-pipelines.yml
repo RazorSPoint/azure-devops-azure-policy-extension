@@ -1,5 +1,3 @@
-name: $(Build.BuildID)
-
 resources:
 - repo: self
 
@@ -10,11 +8,10 @@ trigger:
     include: [ develop ]
 
 queue:
-  name: Hosted VS2017
-  demands: npm
+  name: windows-2019
 
 steps:
-- task: GitVersion@4
+- task: GitVersion@5
   displayName: GitVersion
   inputs:
     preferBundledVersion: false
@@ -43,7 +40,6 @@ steps:
 
 - powershell: '$(Build.SourcesDirectory)/tools/GenerateChangelog.ps1'
   displayName: 'Generate Extension Readme.md'
-
 
 - task: JsonPatch@3
   displayName: 'Patch Azure Policy task.json'
