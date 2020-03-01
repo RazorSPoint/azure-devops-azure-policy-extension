@@ -3,6 +3,7 @@ tfx login -u https://dev.azure.com/razorspoint-test
 
 # upload the deploy azure policy task
 tfx build tasks upload --task-path ./src/AzurePolicy/AzurePolicyV1
+tfx build tasks upload --task-path ./src/AzurePolicy/AzurePolicyV2
 
 # upload the deploy azure initiative task
 tfx build tasks upload --task-path ./src/AzureInitiative/AzureInitiativeV1
