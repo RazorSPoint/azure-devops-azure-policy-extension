@@ -10,11 +10,21 @@ $extensionIds | ForEach-Object {
 
     $taskIdName = $_
 
-    $destinationFolder = "$currentPath\..\src\$taskIdName\$($taskIdName)V1\ps_modules"
+    $taskFolder = "$currentPath\..\src\$taskIdName"
 
-    #remove any content from those folder, as they are temporary
-    Remove-Item -Path $destinationFolder -Recurse -Force -ErrorAction SilentlyContinue
-    #copy and overwrite all
-    Copy-Item -Path "$currentPath\..\src\ps_modules" -Destination $destinationFolder -Recurse -Force
+    $subfolders = Get-ChildItem -Path $taskFolder -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
+
+    $subfolders | ForEach-Object {
+
+        $taskVersionFolder = "$($_.FullName)\ps_modules"
+    
+        #remove any content from those folder, as they are temporary
+        Remove-Item -Path $taskVersionFolder -Recurse -Force -ErrorAction SilentlyContinue
+        #copy and overwrite all
+        Copy-Item -Path "$currentPath\..\src\ps_modules" -Destination $taskVersionFolder -Recurse -Force
+
+    }
+
+
 
 }

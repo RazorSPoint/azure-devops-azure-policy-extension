@@ -291,5 +291,5 @@ __pycache__/
 
 #custom solution files
 src/overview.md
-src/AzurePolicy/AzurePolicyV1/ps_modules
-src/AzureInitiative/AzureInitiativeV1/ps_modules
+src/AzurePolicy/AzurePolicy*/ps_modules
+src/AzureInitiative/AzureInitiative*/ps_modules
