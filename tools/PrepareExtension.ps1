@@ -17,5 +17,4 @@ $extensionIds | ForEach-Object {
     #copy and overwrite all
     Copy-Item -Path "$currentPath\..\src\ps_modules" -Destination $destinationFolder -Recurse -Force
 
-
 }
