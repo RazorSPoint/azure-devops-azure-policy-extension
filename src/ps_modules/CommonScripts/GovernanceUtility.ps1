@@ -86,6 +86,7 @@ function Confirm-FileExists {
     process {
         if (-not (Test-Path $FilePath)) {
             Write-VstsTaskError -Message "`nFile path '$FilePath' for $FileContext does not exist.`n"
+            Write-VstsSetResult -Result 'Failed' -Message "Error detected" -DoNotThrow
         }
     }
 }

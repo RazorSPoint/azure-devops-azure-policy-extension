@@ -10,6 +10,10 @@ Describe 'Governance Utility Tests' {
     $fullPolicySample = Get-Content -Path "$currentPath/testfiles/Policies/azurepolicy.json"  -Raw
     $fullInitiativeSample = Get-Content -Path "$currentPath/testfiles/Policies/policyset.json"  -Raw
 
+    Mock Write-VstsTaskError{
+        return $Message
+    }
+
     Context "Get-GovernanceFullDeploymentParameters" {
 
         Mock Get-Content {
@@ -23,7 +27,7 @@ Describe 'Governance Utility Tests' {
 
         Mock Confirm-FileExists { }
 
-        It -Name "Get parameters for the -GovernanceType <GovernanceType> on subscription scope with file <GovernanceFilePath>"  -TestCases @(
+        It -Name "Get parameters for the GovernanceType='<GovernanceType>' on subscription scope with file path '<GovernanceFilePath>'"  -TestCases @(
             @{GovernanceType = "Policy"; GovernanceFilePath = "azurepolicy.json" }
             @{GovernanceType = "Initiative"; GovernanceFilePath = "policyset.json" }
         ) {
@@ -57,14 +61,16 @@ Describe 'Governance Utility Tests' {
             }
         }
 
-        It -Name "Should throw exception when non existing FilePath"  -TestCases @(
-            @{FilePath = "C:/MyPath/MyFile.txt"; FileContext= "policy test"}
+        It -Name "Should throw exception when non existing FilePath with FileContext '<FileContext>'"  -TestCases @(
             @{FilePath = "C:/Some/NonExistingFile.txt"; FileContext= "initiative test"}
             @{FilePath = "C:/Some/NonExistingFile.txt"; FileContext= "policy test"}
         ) {
             param ($FilePath, $FileContext)            
 
-            {Confirm-FileExists -FilePath $FilePath -FileContext $FileContext} | Should -Throw $FileContext
+            $errorMessage = Confirm-FileExists -FilePath $FilePath -FileContext $FileContext
+
+            $errorMessage | Should -BeLike "* $FileContext *"
+            $errorMessage | Should -BeLike "* '$FilePath' *"
         }
 
         It -Name "Should not throw exception when existing FilePath"  -TestCases @(
@@ -73,5 +79,23 @@ Describe 'Governance Utility Tests' {
             param ($FilePath)
             {Confirm-FileExists -FilePath $FilePath -FileContext "my context"} | Should -Not -Throw
         }
+    }
+
+    Context "Write-GovernanceError" {
+
+        It -Name "Should throw an error message"{
+
+            $errorMessage = "Some error"
+            $fullErrorMessage = ""
+            try{
+                throw $errorMessage
+            }
+            catch{
+                $fullErrorMessage = Write-GovernanceError $_
+            }
+
+            $fullErrorMessage | Should -BeLike "*The error message was: $errorMessage*"
+        }
+
     }
 }
