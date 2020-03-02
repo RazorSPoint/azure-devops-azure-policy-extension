@@ -1,17 +1,23 @@
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory=$true)]
-    [ValidateRange(0, [int]::MaxValue)]
+    [Parameter(Mandatory = $false,ParameterSetName="Patch")]
+    [Parameter(Mandatory = $false,ParameterSetName="CommitsSinceVersionSource")]
+    [ValidateRange(-1, [int]::MaxValue)]
     [string]
-    $Major,
-    [Parameter(Mandatory=$true)]
-    [ValidateRange(0, [int]::MaxValue)]
+    $Major = -1,
+    [Parameter(Mandatory = $false,ParameterSetName="Patch")]
+    [Parameter(Mandatory = $false,ParameterSetName="CommitsSinceVersionSource")]
+    [ValidateRange(-1, [int]::MaxValue)]
     [string]
-    $Minor,
-    [Parameter(Mandatory=$true)]
-    [ValidateRange(0, [int]::MaxValue)]
+    $Minor = -1,
+    [Parameter(Mandatory = $false,ParameterSetName="Patch")]
+    [ValidateRange(-1, [int]::MaxValue)]
     [string]
-    $Patch
+    $Patch = -1,
+    [Parameter(Mandatory = $false,ParameterSetName="CommitsSinceVersionSource")]
+    [ValidateRange(-1, [int]::MaxValue)]
+    [string]
+    $CommitsSinceVersionSource = -1
 )
 
 $currentPath = (Split-Path -Parent $MyInvocation.MyCommand.Path)
@@ -35,9 +41,17 @@ $extensionIds | ForEach-Object {
     
         $taskJson = Get-Content -Path $taskJsonFilePath | ConvertFrom-Json
 
-        $taskJson.version.Major = $Major
-        $taskJson.version.Minor = $Minor
-        $taskJson.version.Patch = $Patch
+        if ($Major -gt -1) {
+            $taskJson.version.Major = $Major
+        }
+        if ($Minor -gt -1) {
+            $taskJson.version.Minor = $Minor
+        }
+        if ($Patch -gt -1) {
+            $taskJson.version.Patch = $Patch
+        }else{
+            $taskJson.version.Patch = $CommitsSinceVersionSource
+        }
 
         $taskJson | Set-Content "$($_.FullName)\task.json" -
     }

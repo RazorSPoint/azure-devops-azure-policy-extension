@@ -41,13 +41,8 @@ steps:
 - powershell: '$(Build.SourcesDirectory)/tools/GenerateChangelog.ps1'
   displayName: 'Generate Extension Readme.md'
 
-- task: JsonPatch@3
-  displayName: 'Patch Azure Policy task.json'
-  inputs:
-    JsonWorkingDir: '$(Build.SourcesDirectory)/src/AzurePolicy/AzurePolicyV1'
-    JsonTargetFilters: task.json
-    JsonPatchContent: '= /version/Patch => "$(GitVersion.CommitsSinceVersionSource)"'
-    OutputPatchFile: true
+- powershell: '$(Build.SourcesDirectory)/tools/SetTaskVersion.ps1 -Major $(GitVersion.Major) -Minor $(GitVersion.Minor) -Patch $(GitVersion.CommitsSinceVersionSource)'
+  displayName: 'Set Tasks Version'
 
 - task: TfxInstaller@2
   inputs:
