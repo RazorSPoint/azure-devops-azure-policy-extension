@@ -84,13 +84,13 @@ function Confirm-FileExists {
         $FileContext
     )
     process {
-        if (-not (Test-Path $JsonFilePath)) {
-            Write-VstsTaskError -Message "`nFile path '$JsonFilePath' for $FileContext does not exist.`n"
+        if (-not (Test-Path $FilePath)) {
+            Write-VstsTaskError -Message "`nFile path '$FilePath' for $FileContext does not exist.`n"
         }
     }
 }
 
-function Invoke-GovernanceFullDeployment {
+function Get-GovernanceFullDeploymentParameters {
     [CmdletBinding()]
     [CmdletBinding(DefaultParameterSetName = 'Subscription')]
     param(
@@ -105,51 +105,46 @@ function Invoke-GovernanceFullDeployment {
         [String]
         $GovernanceType
     )
-    process {  
-        if (-not (Test-Path $GovernanceFilePath)) {
-            throw "`nFile path '$GovernanceFilePath' for the policy does not exist.`n"
-        }
-        else {
-    
-            $governanceContent = Get-Content -Path $GovernanceFilePath | Out-String | ConvertFrom-Json
-            $parameters = @{ }
-            $fileName = ""
-    
-            switch ($GovernanceType) {
-                "Policy" { 
-                    $parameters = @{
-                        Name        = $governanceContent.name
-                        DisplayName = $governanceContent.properties.displayName
-                        Description = $governanceContent.properties.description
-                        Metadata    = $governanceContent.properties.metadata | ConvertTo-Json -Depth 30 -Compress
-                        Mode        = $governanceContent.properties.mode
-                        Parameters  = $governanceContent.properties.parameters | ConvertTo-Json -Depth 30 -Compress
-                        PolicyRule  = $governanceContent.properties.policyRule | ConvertTo-Json -Depth 30 -Compress
-                    }
-                    $fileName = "DeploySplittedPolicyDefinition.ps1"
+    process {
+
+        Confirm-FileExists -FilePath $GovernanceFilePath -FileContext "the policy"
+ 
+        $governanceContent = Get-Content -Path $GovernanceFilePath | Out-String | ConvertFrom-Json
+        $parameters = @{ }
+
+        switch ($GovernanceType) {
+            "Policy" { 
+                $parameters = @{
+                    Name        = $governanceContent.name
+                    DisplayName = $governanceContent.properties.displayName
+                    Description = $governanceContent.properties.description
+                    Metadata    = $governanceContent.properties.metadata | ConvertTo-Json -Depth 30 -Compress
+                    Mode        = $governanceContent.properties.mode
+                    Parameters  = $governanceContent.properties.parameters | ConvertTo-Json -Depth 30 -Compress
+                    PolicyRule  = $governanceContent.properties.policyRule | ConvertTo-Json -Depth 30 -Compress
                 }
-                "Initiative" { 
-                    $parameters = @{
-                        PolicyDefinition = $governanceContent.properties.policyDefinitions | ConvertTo-Json -Depth 30 -Compress
-                        Name             = $governanceContent.name
-                        DisplayName      = $governanceContent.properties.displayName
-                        Description      = $governanceContent.properties.description
-                        Metadata         = $governanceContent.properties.metadata | ConvertTo-Json -Depth 30 -Compress 
-                        Parameter        = $governanceContent.properties.parameters | ConvertTo-Json -Depth 30 -Compress
-                    }
-                    $fileName = "DeploySplittedPolicyInitiative.ps1"
-                }
-                Default { }
-            }  
-    
-            if ($PSCmdlet.ParameterSetName -eq "Subscription") {    
-                $parameters.SubscriptionId = $SubscriptionId    
             }
-            elseif ($PSCmdlet.ParameterSetName -eq "ManagementGroup") {    
-                $parameters.ManagementGroupId = $ManagementGroupName    
-            }  
-    
-            . "$PSScriptRoot\..\..\$fileName" @parameters
-        }        
+            "Initiative" { 
+                $parameters = @{
+                    PolicyDefinition = $governanceContent.properties.policyDefinitions | ConvertTo-Json -Depth 30 -Compress
+                    Name             = $governanceContent.name
+                    DisplayName      = $governanceContent.properties.displayName
+                    Description      = $governanceContent.properties.description
+                    Metadata         = $governanceContent.properties.metadata | ConvertTo-Json -Depth 30 -Compress 
+                    Parameter        = $governanceContent.properties.parameters | ConvertTo-Json -Depth 30 -Compress
+                }
+            }
+            Default { }
+        }  
+
+        if ($PSCmdlet.ParameterSetName -eq "Subscription") {    
+            $parameters.SubscriptionId = $SubscriptionId    
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq "ManagementGroup") {    
+            $parameters.ManagementGroupId = $ManagementGroupName    
+        }  
+
+        Write-Output $parameters
+               
     }
 }
