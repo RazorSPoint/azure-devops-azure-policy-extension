@@ -40,7 +40,9 @@ try {
        
         $splattedArgs.GovernanceFilePath = $JsonFilePath 
         
-        Invoke-GovernanceFullDeployment @splattedArgs -GovernanceType Initiative
+        $parameters = Get-GovernanceFullDeploymentParameters @splattedArgs -GovernanceType Initiative
+
+        . "$PSScriptRoot\..\..\DeploySplittedPolicyInitiative.ps1" @parameters
 
     }
     elseif ($DeploymentType -eq "Splitted") {       

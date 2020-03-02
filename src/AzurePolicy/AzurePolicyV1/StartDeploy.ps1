@@ -13,6 +13,7 @@ try {
     Import-VstsLocStrings "$PSScriptRoot/task.json"
 
     $JsonFilePath = $null
+    $targetAzurePs = $null
 
     # get the tmp path of the agent
     $agentTmpPath = "$($env:AGENT_RELEASEDIRECTORY)\_temp"
@@ -125,14 +126,16 @@ try {
     try
     {
         $serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Default 'ConnectedServiceName'
+
         $serviceName = Get-VstsInput -Name $serviceNameInput -Default (Get-VstsInput -Name DeploymentEnvironmentName)
+
         if (!$serviceName)
         {
                 Get-VstsInput -Name $serviceNameInput -Require
         }
     
         $endpoint = Get-VstsEndpoint -Name $serviceName -Require
-    
+
         if($endpoint)
         {
             $authScheme = $endpoint.Auth.Scheme 

@@ -7,15 +7,15 @@ $JsonFilePath = $null
 [string]$ManagementGroupName = Get-VstsInput -Name ManagementGroupName
 [string]$DeploymentType = Get-VstsInput -Name DeploymentType
 
-$splattedArgs = @{ }
+$parameters = @{ }
 
 try {
 
     if ($DefinitionLocation -eq "Subscription") {
-        $splattedArgs.SubscriptionId = $SubscriptionId
+        $parameters.SubscriptionId = $SubscriptionId
     }
     elseif ($DefinitionLocation -eq "ManagementGroup") {
-        $splattedArgs.ManagementGroupId = $ManagementGroupName
+        $parameters.ManagementGroupId = $ManagementGroupName
     }
 
     . $PSScriptRoot\ps_modules\CommonScripts\ModuleUtility.ps1
@@ -39,9 +39,10 @@ try {
             $JsonFilePath = Add-TemporaryJsonFile -JsonInline $JsonInline          
         }
         
-        $splattedArgs.GovernanceFilePath = $JsonFilePath  
+        $parameters.GovernanceFilePath = $JsonFilePath  
         
-        Invoke-GovernanceFullDeployment @splattedArgs -GovernanceType Policy
+        $parameters = Get-GovernanceFullDeploymentParameters @parameters -GovernanceType Policy
+
     }
     elseif ($DeploymentType -eq "Splitted") {       
         [string]$ParametersFilePath = Get-VstsInput -Name ParametersFilePath
@@ -49,7 +50,7 @@ try {
 
         [string]$Category = Get-VstsInput -Name Category
 
-        $splattedArgs = @{
+        $parameters = @{
             Name        = Get-VstsInput -Name Name            
             DisplayName = Get-VstsInput -Name DisplayName
             Description = Get-VstsInput -Name Description
@@ -60,12 +61,12 @@ try {
         [string]$PolicyRuleFilePath = Get-VstsInput -Name PolicyRuleFilePath
         Confirm-FileExists -FilePath $PolicyRuleFilePath -FileContext "Policy Rule"
 
-        $splattedArgs.Mode = Get-VstsInput -Name Mode
-        $splattedArgs.PolicyRule = Get-Content -Path $PolicyRuleFilePath | Out-String 
-    
-        . "$PSScriptRoot\DeploySplittedPolicyDefinition.ps1" @splattedArgs
+        $parameters.Mode = Get-VstsInput -Name Mode
+        $parameters.PolicyRule = Get-Content -Path $PolicyRuleFilePath | Out-String 
 
     }
+
+    . "$PSScriptRoot\..\..\DeploySplittedPolicyDefinition.ps1" @parameters
 }
 catch {
     Write-GovernanceError -Exception $_ 
