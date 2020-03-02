@@ -1,0 +1,35 @@
+{
+    "name": "DenyCostCenterFromRg",
+    "properties": {
+        "displayName": "Deny if cost center tag value from parent resource group not valid",
+        "description": "Enforces the required tag 'CC' (cost center) value from the parent resource groups to the child resource.",
+        "mode": "indexed",
+        "metadata": {
+            "category": "SHH Tagging"
+        },
+        "parameters": {},
+        "policyRule": {
+            "if": {
+                "allOf": [                    
+                    {
+                        "not": {
+                            "field": "tags.CC",
+                            "equals": "[resourceGroup().tags.CC]"
+                        }
+                    },
+                    {
+                        "field": "tags.CC",
+                        "exists": "true"
+                    },
+                    {
+                        "field": "[resourceGroup().tags.CC]",
+                        "exists": "true"
+                    }
+                ]
+            },
+            "then": {
+                "effect": "deny"
+            }
+        }
+    }    
+}

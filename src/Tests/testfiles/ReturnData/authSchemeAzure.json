@@ -1,0 +1,38 @@
+{
+    "Url": "https://management.azure.com/",
+    "Data": {
+        "managementGroupId": "63e9f690-1619-4d16-ad57-a1fd5e1620b5",
+        "managementGroupName": "Tenant Root Group",
+        "environment": "AzureCloud",
+        "scopeLevel": "ManagementGroup",
+        "creationMode": "Automatic",
+        "azureSpnRoleAssignmentId": "06c98be9-6334-40be-8c88-ddc0203e0262",
+        "azureSpnPermissions": "[{\"roleAssignmentId\":\"44628f41e-0544-4d76-8f17-1b01e5d71e5a\",\"resourceProvider\":\"Microsoft.RoleAssignment\",\"provisioned\":true}]",
+        "spnObjectId": "06d4636d-a065-4fc1-86d0-ca225d0c2b52",
+        "appObjectId": "ae413193-a52f-4ded-a8cc-a034c414acf9",
+        "environmentUrl": "https://management.azure.com/",
+        "galleryUrl": "https://gallery.azure.com/",
+        "serviceManagementUrl": "https://management.core.windows.net/",
+        "resourceManagerUrl": "https://management.azure.com/",
+        "activeDirectoryAuthority": "https://login.microsoftonline.com/",
+        "environmentAuthorityUrl": "https://login.windows.net/",
+        "graphUrl": "https://graph.windows.net/",
+        "managementPortalUrl": "https://manage.windowsazure.com/",
+        "armManagementPortalUrl": "https://portal.azure.com/",
+        "activeDirectoryServiceEndpointResourceId": "https://management.core.windows.net/",
+        "sqlDatabaseDnsSuffix": ".database.windows.net",
+        "AzureKeyVaultDnsSuffix": "vault.azure.net",
+        "AzureKeyVaultServiceEndpointResourceId": "https://vault.azure.net",
+        "StorageEndpointSuffix": "core.windows.net",
+        "EnableAdfsAuthentication": "false"
+    },
+    "Auth": {
+        "parameters": {
+            "tenantid": "260d7d8e-fe73-42bc-80c9-b86dcbe21660",
+            "serviceprincipalid": "b2a81cad-b9ca-4202-9ce3-32015f4dcb98",
+            "authenticationType": "Type",
+            "serviceprincipalkey": "88d0987c-ec84-417c-8332-390a46b498d4"
+        },
+        "scheme": "ServicePrincipal"
+    }
+}
