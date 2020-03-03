@@ -12,10 +12,7 @@ function Add-TemporaryJsonFile {
         $agentTmpPath = "$($env:AGENT_RELEASEDIRECTORY)\_temp"
 
         #get random temporary file name
-        $tmpInlineJsonFileName = [System.IO.Path]::GetRandomFileName() + ".json"
-
-        #get json string and check for valid json
-        [string]$JsonInline = (Get-VstsInput -Name JsonInline)
+        $tmpInlineJsonFileName = [System.IO.Path]::GetRandomFileName() + ".json"      
          
         $JsonObject = New-Object -TypeName "PSCustomObject"
         try {
@@ -25,7 +22,7 @@ function Add-TemporaryJsonFile {
                 New-Item -ItemType Directory -Force -Path $agentTmpPath
             }
             $JsonObject = ConvertFrom-Json -InputObject $JsonInline
-            $JsonObject | ConvertTo-Json -depth 100 | Out-File $JsonFilePath
+            $null = $JsonObject | ConvertTo-Json -depth 100 -Compress | Out-File $JsonFilePath
 
             Write-Output $JsonFilePath
         }
@@ -47,13 +44,9 @@ function Clear-GovernanceEnvironment {
     
     process {
         #clean up tmp path
-        if ($FileOrInline -eq 'Inline' -and (Test-Path -LiteralPath $TemporaryFilePath)) {
+        if (Test-Path -LiteralPath $TemporaryFilePath) {
             Remove-Item -LiteralPath $TemporaryFilePath -ErrorAction 'SilentlyContinue'
         }
-    
-        Import-Module $PSScriptRoot\..\VstsAzureHelpers_
-        Remove-EndpointSecrets
-        Disconnect-AzureAndClearContext -ErrorAction SilentlyContinue
     }
 
 }

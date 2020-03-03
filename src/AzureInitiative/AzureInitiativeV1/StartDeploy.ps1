@@ -34,7 +34,8 @@ try {
             [string]$JsonFilePath = Get-VstsInput -Name JsonFilePath
             Confirm-FileExists -FilePath $JsonFilePath -FileContext "parameter JsonFilePath"
         }
-        else {
+        else {            
+            [string]$JsonInline = (Get-VstsInput -Name JsonInline)
             $JsonFilePath = Add-TemporaryJsonFile -JsonInline $JsonInline
         }
        
@@ -72,5 +73,8 @@ catch {
 }
 finally {
    Clear-GovernanceEnvironment -TemporaryFilePath $JsonFilePath
+   Import-Module $PSScriptRoot\..\VstsAzureHelpers_
+   Remove-EndpointSecrets
+   Disconnect-AzureAndClearContext -ErrorAction SilentlyContinue
 }
 

@@ -4,7 +4,7 @@ Set-StrictMode -Version Latest
 
 $currentPath = (Split-Path -Parent $MyInvocation.MyCommand.Path)
 . $currentPath\Common\SetEnvironment.ps1
-Import-Module "$currentPath\..\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue
+Import-Module "$currentPath\..\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
 
 Mock Get-VstsEndpoint {       
     return $endPoint 
