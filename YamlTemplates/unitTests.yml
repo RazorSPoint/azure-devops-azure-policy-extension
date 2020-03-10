@@ -6,7 +6,7 @@ parameters:
 
 steps:
 - task: PowerShell@2
-  displayName: 'Install Pester'
+  displayName: 'Install Pester and Az modules'
   inputs:
     targetType: 'inline'
     script: |

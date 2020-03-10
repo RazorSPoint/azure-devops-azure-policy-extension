@@ -215,6 +215,9 @@ Describe 'Governance Utility Tests' {
             $filePath = Add-TemporaryJsonFile -JsonInline $json
             $filePath | Should -Exist
 
+            $filePath
+            Test-Path $filePath
+
             Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue            
         }
 
