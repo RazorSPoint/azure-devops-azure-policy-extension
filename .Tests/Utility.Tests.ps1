@@ -215,7 +215,7 @@ Describe 'Governance Utility Tests' {
             $filePath = Add-TemporaryJsonFile -JsonInline $json
             $filePath | Should -Exist
 
-            Remove-Item -Path $filePath -ErrorAction SilentlyContinue            
+            Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue            
         }
 
         It -Name "File with JSON should be like input JSON" { 
@@ -224,7 +224,7 @@ Describe 'Governance Utility Tests' {
             $fileContent = Get-Content -Path $filePath -Raw
             $fileContent | Should -BeLike "*$json*"
 
-            Remove-Item -Path $filePath -ErrorAction SilentlyContinue           
+            Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue           
         }
 
         It -Name "Wrong JSON should return error message" { 
