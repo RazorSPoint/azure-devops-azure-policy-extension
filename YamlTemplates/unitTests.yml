@@ -9,7 +9,9 @@ steps:
   displayName: 'Install Pester'
   inputs:
     targetType: 'inline'
-    script: 'Install-Module -Name Pester -Repository PSGallery -Force -Scope CurrentUser -AllowClobber -SkipPublisherCheck'
+    script: |
+      Install-Module -Name Pester -Repository PSGallery -Force -Scope CurrentUser -AllowClobber -SkipPublisherCheck
+      Install-Module -Name Az -Repository PSGallery -Force -Scope CurrentUser -AllowClobber -SkipPublisherCheck
 
 - ${{ if eq(parameters.CodeCoverage, 'false') }}:
   - task: PowerShell@2
