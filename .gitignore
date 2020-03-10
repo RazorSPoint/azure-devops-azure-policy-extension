@@ -293,3 +293,4 @@ __pycache__/
 src/overview.md
 src/AzurePolicy/AzurePolicy*/ps_modules
 src/AzureInitiative/AzureInitiative*/ps_modules
+coverage.xml

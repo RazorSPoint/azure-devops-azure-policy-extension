@@ -6,17 +6,12 @@ $currentPath = (Split-Path -Parent $MyInvocation.MyCommand.Path)
 . $currentPath\Common\SetEnvironment.ps1
 Import-Module "$currentPath\..\src\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
 
-Mock Get-VstsEndpoint {       
-    return $endPoint 
-}
-
-. $currentPath\..\ps_modules\CommonScripts\GovernanceUtility.ps1
-
+. $currentPath\..\src\ps_modules\CommonScripts\GovernanceUtility.ps1
 
 Describe 'Azure Policy V1 Tests' {
 
     Mock Get-VstsEndpoint {       
-        return $endPoint 
+        return _getEndPointEnvironment
     }
 
     # Input 'MyInput':
@@ -25,6 +20,8 @@ Describe 'Azure Policy V1 Tests' {
     $env:INPUT_JsonInline = ""
     $env:INPUT_GovernanceType = "PolicyDefinition"
     $env:INPUT_DefinitionLocation = "ManagementGroup"
+    $env:INPUT_ManagementGroupName = "59cf60f8-334f-4935-8668-2fba5c648985"    
+    $env:INPUT_SubscriptionId = "5bf5b02f-4f35-4922-a882-041de0c78047"
 
     $env:INPUT_DeploymentType = "Splitted"
     $env:INPUT_ParametersFilePath = "$currentPath/testfiles/Policies/azurepolicy.Audit-PIP.parameters.json"
@@ -40,7 +37,7 @@ Describe 'Azure Policy V1 Tests' {
         It -Name "Deploy Policy V1 does not throw errors" {           
 
             { Invoke-VstsTaskScript -ScriptBlock { 
-                    . $currentPath\..\AzurePolicy\AzurePolicyV1\StartDeploy.ps1
+                    #. $currentPath\..\src\AzurePolicy\AzurePolicyV1\StartDeploy.ps1
                 } -ErrorAction Stop
             } | Should -Not -Throw
         }      
