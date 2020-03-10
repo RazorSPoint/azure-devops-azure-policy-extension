@@ -30,8 +30,8 @@ Describe 'Governance Utility Tests' {
         Mock Confirm-FileExists { }
 
         It -Name "Get parameters for the GovernanceType='<GovernanceType>' on subscription scope with file path '<GovernanceFilePath>'"  -TestCases @(
-            @{GovernanceType = "Policy"; GovernanceFilePath = "azurepolicy.json" }
-            @{GovernanceType = "Initiative"; GovernanceFilePath = "policyset.json" }
+            @{GovernanceType = "PolicyDefinition"; GovernanceFilePath = "azurepolicy.json" }
+            @{GovernanceType = "PolicyInitiative"; GovernanceFilePath = "policyset.json" }
         ) {
             param ($GovernanceType, $GovernanceFilePath)            
 
@@ -43,13 +43,52 @@ Describe 'Governance Utility Tests' {
 
             $parameters["SubscriptionId"] | Should -Be $subscriptionId
 
-            if ($GovernanceType -eq "Policy") {
+            if ($GovernanceType -eq "PolicyDefinition") {
                 $parameters.ContainsKey("PolicyRule") | Should -Be $true
                 $parameters.ContainsKey("Mode") | Should -Be $true
             }
-            elseif ($GovernanceType -eq "Initiative") {
+            elseif ($GovernanceType -eq "PolicyInitiative") {
                 $parameters.ContainsKey("PolicyDefinition") | Should -Be $true
             }
+        }
+    }
+
+    Context "Get-GovernanceDeploymentParameters" {
+
+        $policy = (Get-Content -Path "$currentPath\testfiles\Policies\azurepolicy.json" -Raw | ConvertFrom-Json)
+
+        Mock Get-VstsInput {
+            #return only env varaible initialized at the beginning
+            $path = "Env:INPUT_$Name"
+            return (Get-Item -LiteralPath $path).Value
+        }
+
+        Mock Confirm-FileExists
+
+        Mock Get-GovernanceFullDeploymentParameters{
+            return  @{
+                Name        = $policy.name
+                DisplayName = $policy.properties.displayName
+                Description = $policy.properties.description
+                Metadata    = $policy.properties.metadata | ConvertTo-Json -Depth 30 -Compress
+                Mode        = $policy.properties.mode
+                Parameters  = $policy.properties.parameters | ConvertTo-Json -Depth 30 -Compress
+                PolicyRule  = $policy.properties.policyRule | ConvertTo-Json -Depth 30 -Compress
+            }
+        }
+
+        It -Name "Get parameters for the from test case file '<TestDataFile>' should not throw exception"  -TestCases @(
+            @{TestDataFile = "policy.managementgroup.Full-File.json" }
+            @{TestDataFile = "policy.subscription.Full-File.json" }
+            @{TestDataFile = "policy.managementgroup.Full-Inline.json" }
+            @{TestDataFile = "policy.subscription.Full-Inline.json" }
+        ) {
+            param ($TestDataFile) 
+            _setGovernanceEnvironment -Path "$currentPath\testfiles\TestCases\$TestDataFile"
+            $governanceType = (Get-Content -Path "$currentPath\testfiles\TestCases\$TestDataFile" -Raw | ConvertFrom-Json)."GovernanceType"
+            {                 
+                Get-GovernanceDeploymentParameters -GovernanceType $governanceType 
+            } | Should -Not -Throw
         }
     }
 
@@ -73,7 +112,7 @@ Describe 'Governance Utility Tests' {
             return ""
         }
 
-        It -Name "Should throw exception when non existing FilePath with FileContext '<FileContext>'"  -TestCases @(
+        It -Name "Should throw Write-VstsTaskError when non existing FilePath with FileContext '<FileContext>'"  -TestCases @(
             @{FilePath = "C:/Some/NonExistingFile.txt"; FileContext = "initiative test" }
             @{FilePath = "C:/Some/NonExistingFile.txt"; FileContext = "policy test" }
         ) {

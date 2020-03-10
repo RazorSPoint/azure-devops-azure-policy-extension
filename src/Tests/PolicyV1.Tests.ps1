@@ -13,7 +13,7 @@ Mock Get-VstsEndpoint {
 . $currentPath\..\ps_modules\CommonScripts\GovernanceUtility.ps1
 
 
-Describe 'Azure Policy Tests' {
+Describe 'Azure Policy V1 Tests' {
 
     Mock Get-VstsEndpoint {       
         return $endPoint 
@@ -35,7 +35,7 @@ Describe 'Azure Policy Tests' {
     $env:INPUT_Mode = "all"
     $env:INPUT_Description = "Audit PIP Description"
 
-    Context -Name "Version 1 Tests" {
+    Context -Name "StartDeploy.ps1" {
 
         It -Name "Deploy Policy V1 does not throw errors" {           
 
@@ -45,6 +45,21 @@ Describe 'Azure Policy Tests' {
             } | Should -Not -Throw
         }      
 
-    }   
+    }
 
+    Context -Name "DeployFullPolicyDefinition.ps1" {
+
+    }
+
+    Context -Name "DeployFullPolicyInitiative.ps1" {
+        
+    }
+
+    Context -Name "DeploySplittedPolicyDefinition.ps1" {
+        
+    }
+
+    Context -Name "DeploySplittedPolicyInitiative.ps1" {
+        
+    }
 }
