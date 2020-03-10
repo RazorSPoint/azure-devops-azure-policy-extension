@@ -84,6 +84,8 @@ function Confirm-FileExists {
     }
 }
 
+
+
 function Get-GovernanceFullDeploymentParameters {
     [CmdletBinding()]
     [CmdletBinding(DefaultParameterSetName = 'Subscription')]
@@ -95,7 +97,7 @@ function Get-GovernanceFullDeploymentParameters {
         [Parameter(Mandatory = $true, ParameterSetName = 'ManagementGroup')]
         [string]$ManagementGroupId,
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Policy", "Initiative")]
+        [ValidateSet("PolicyDefinition", "PolicyInitiative")]
         [String]
         $GovernanceType
     )
@@ -107,7 +109,7 @@ function Get-GovernanceFullDeploymentParameters {
         $parameters = @{ }
 
         switch ($GovernanceType) {
-            "Policy" { 
+            "PolicyDefinition" { 
                 $parameters = @{
                     Name        = $governanceContent.name
                     DisplayName = $governanceContent.properties.displayName
@@ -118,7 +120,7 @@ function Get-GovernanceFullDeploymentParameters {
                     PolicyRule  = $governanceContent.properties.policyRule | ConvertTo-Json -Depth 30 -Compress
                 }
             }
-            "Initiative" { 
+            "PolicyInitiative" { 
                 $parameters = @{
                     PolicyDefinition = $governanceContent.properties.policyDefinitions | ConvertTo-Json -Depth 30 -Compress
                     Name             = $governanceContent.name
@@ -141,4 +143,78 @@ function Get-GovernanceFullDeploymentParameters {
         Write-Output $parameters
                
     }
+}
+
+function Get-GovernanceDeploymentParameters {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("PolicyDefinition", "PolicyInitiative")]
+        [String]
+        $GovernanceType       
+    )
+
+    process {
+
+        $parameters = @{ }
+
+        [string]$DefinitionLocation = Get-VstsInput -Name DefinitionLocation
+        [string]$DeploymentType = Get-VstsInput -Name DeploymentType
+          
+        if ($DefinitionLocation -eq "Subscription") {
+            $parameters.SubscriptionId = Get-VstsInput -Name SubscriptionId
+        }
+        elseif ($DefinitionLocation -eq "ManagementGroup") {
+            $parameters.ManagementGroupId =  Get-VstsInput -Name ManagementGroupName
+        }
+
+        if ($DeploymentType -eq "Full") {
+
+            [string]$FileOrInline = Get-VstsInput -Name FileOrInline
+    
+            if ($FileOrInline -eq "File") {
+                [string]$JsonFilePath = Get-VstsInput -Name JsonFilePath
+                Confirm-FileExists -FilePath $JsonFilePath -FileContext "parameter JsonFilePath"
+            }
+            else {            
+                [string]$JsonInline = (Get-VstsInput -Name JsonInline)
+                $JsonFilePath = Add-TemporaryJsonFile -JsonInline $JsonInline
+            }
+       
+            $parameters.GovernanceFilePath = $JsonFilePath 
+        
+            $parameters = Get-GovernanceFullDeploymentParameters @parameters -GovernanceType $GovernanceType
+        }
+        elseif ($DeploymentType -eq "Splitted") {       
+            [string]$ParametersFilePath = Get-VstsInput -Name ParametersFilePath
+            Confirm-FileExists -FilePath $ParametersFilePath -FileContext "Parameters"
+
+            [string]$Category = Get-VstsInput -Name Category
+
+            $parameters = @{
+                Name        = Get-VstsInput -Name Name            
+                DisplayName = Get-VstsInput -Name DisplayName
+                Description = Get-VstsInput -Name Description
+                Metadata    = "{ 'category': '$Category' }"
+                Parameters  = Get-Content -Path $ParametersFilePath | Out-String
+            }
+
+            if ($GovernanceType -eq "PolicyInitiative") {
+                [string]$InitiativePolicyDefinitionsFilePath = Get-VstsInput -Name InitiativePolicyDefinitionsFilePath    
+                Confirm-FileExists -FilePath $InitiativePolicyDefinitionsFilePath -FileContext "Policy Rule"
+    
+                $parameters.PolicyDefinition = Get-Content -Path $InitiativePolicyDefinitionsFilePath | Out-String        
+            }
+            else {
+                [string]$PolicyRuleFilePath = Get-VstsInput -Name PolicyRuleFilePath
+                Confirm-FileExists -FilePath $PolicyRuleFilePath -FileContext "Policy Rule"
+    
+                $parameters.Mode = Get-VstsInput -Name Mode
+                $parameters.PolicyRule = Get-Content -Path $PolicyRuleFilePath | Out-String 
+            }
+        }
+
+        return $parameters
+    }
+
 }
