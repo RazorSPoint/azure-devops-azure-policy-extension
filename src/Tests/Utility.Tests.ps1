@@ -90,6 +90,29 @@ Describe 'Governance Utility Tests' {
                 Get-GovernanceDeploymentParameters -GovernanceType $governanceType 
             } | Should -Not -Throw
         }
+
+        It -Name "Get parameters for the from test case file '<TestDataFile>' should match returning parameters"  -TestCases @(
+            @{TestDataFile = "policy.managementgroup.Full-File" }
+            @{TestDataFile = "policy.subscription.Full-File" }
+            @{TestDataFile = "policy.managementgroup.Full-Inline" }
+            @{TestDataFile = "policy.subscription.Full-Inline" }
+        ) {
+            param ($TestDataFile) 
+            _setGovernanceEnvironment -Path "$currentPath\testfiles\TestCases\$TestDataFile.json"
+            
+            $governanceType = (Get-Content -Path "$currentPath\testfiles\TestCases\$TestDataFile.json" -Raw | ConvertFrom-Json)."GovernanceType"            
+            $expectedParameters = (Get-Content -Path "$currentPath\testfiles\ReturnData\$TestDataFile.return.json" -Raw | ConvertFrom-Json)
+
+            $ouputParameters = Get-GovernanceDeploymentParameters -GovernanceType $governanceType 
+
+            $expectedParamNames = ($expectedParameters | Get-Member -MemberType NoteProperty).Name
+            foreach ($parameterName in $expectedParamNames) {
+                
+                $ouputParameters.ContainsKey($parameterName) `
+                 -and $ouputParameters[$parameterName] -eq $expectedParameters."$parameterName" `
+                 | Should -Be $true
+            }
+        }
     }
 
     Context "Confirm-FileExists" {
