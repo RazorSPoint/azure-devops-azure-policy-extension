@@ -1,0 +1,48 @@
+#source: Donavan Brown taken from the build pipeline for VSTeams
+
+parameters:
+  os: ''
+  CodeCoverage: 'false'
+
+steps:
+- task: PowerShell@2
+  displayName: 'Build Module'
+  inputs:
+
+- task: PowerShell@2
+  displayName: 'Install Pester'
+  inputs:
+    targetType: 'inline'
+    script: 'Install-Module -Name Pester -Repository PSGallery -Force -Scope CurrentUser -AllowClobber -SkipPublisherCheck'
+
+- ${{ if eq(parameters.CodeCoverage, 'false') }}:
+  - task: PowerShell@2
+    displayName: 'Run Unit Tests'
+    inputs:
+      targetType: 'inline'
+      script: |
+        Invoke-Pester -Script .\.Tests -EnableExit -Strict -OutputFile test-results.xml -OutputFormat NUnitXml -passThru
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+- ${{ if eq(parameters.CodeCoverage, 'true') }}:
+  - task: PowerShell@2
+    displayName: 'Run Unit Tests with Code Coverage'
+    inputs:
+      targetType: 'inline'
+      script: |
+        Invoke-Pester -Script .\.Tests -CodeCoverage .\src\ps_modules\CommonScripts\*.ps*1 -CodeCoverageOutputFile coverage.xml -CodeCoverageOutputFileFormat JaCoCo -EnableExit -Strict -OutputFile test-results.xml -OutputFormat NUnitXml
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage'
+    inputs:
+      summaryFileLocation: '**\coverage.xml'
+      failIfCoverageEmpty: true
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: 'NUnit'
+    testResultsFiles: '**\test-results.xml'
+    testRunTitle: '${{ parameters.os }} Unit Tests'
+  condition: succeededOrFailed()

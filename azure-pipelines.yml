@@ -7,8 +7,8 @@ trigger:
   branches:
     include: [ develop ]
 
-queue:
-  name: windows-2019
+pool:
+  vmImage: windows-latest
 
 steps:
 - task: GitVersion@5
@@ -16,24 +16,9 @@ steps:
   inputs:
     preferBundledVersion: false
 
-- task: Pester@8
-  displayName: 'Pester Test Runner'
-  inputs:
-    scriptFolder: "@{Path=''$(Build.SourcesDirectory)'; Parameters=@{AgentToolPath ='$(Agent.WorkFolder)'}}"
-    resultsFile: '$(Build.SourcesDirectory)\Test-Pester.XML'
-    run32Bit: false
-
-  enabled: false
-
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results **\Test-*.xml'
-  inputs:
-    testResultsFormat: NUnit
-    testResultsFiles: '**\Test-*.xml'
-    searchFolder: '$(Build.SourcesDirectory)'
-
-  enabled: false
-  condition: succeededOrFailed()
+- template: build/unitTests.yml
+  parameters:
+    CodeCoverage: '$(OS)'
 
 - powershell: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1'
   displayName: 'Copy Common PowerShell Modules Into Tasks'
