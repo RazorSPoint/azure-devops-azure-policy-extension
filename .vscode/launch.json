@@ -19,7 +19,7 @@
          "name": "PowerShell All Pester Tests with Code Coverage",
          "script": "Invoke-Pester",
          "args": ["-Script",
-         ".Tests"],
+         "./Tests/ -CodeCoverage ./src/*.ps*1 -PassThru"],
          "cwd": "${workspaceRoot}"
       },
        {
