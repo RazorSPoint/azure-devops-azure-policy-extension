@@ -10,7 +10,7 @@
           "name": "PowerShell Pester Tests",
           "script": "Invoke-Pester",
           "args": ["-Script",
-          "${file}"],
+          "${file} -EnableExit -Strict -PassThru"],
           "cwd": "${workspaceRoot}"
        },
        {
