@@ -6,10 +6,6 @@ parameters:
 
 steps:
 - task: PowerShell@2
-  displayName: 'Build Module'
-  inputs:
-
-- task: PowerShell@2
   displayName: 'Install Pester'
   inputs:
     targetType: 'inline'
