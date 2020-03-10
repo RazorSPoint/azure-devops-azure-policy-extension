@@ -16,9 +16,9 @@ steps:
   inputs:
     preferBundledVersion: false
 
-- template: build/unitTests.yml
+- template: YamlTemplates/unitTests.yml
   parameters:
-    CodeCoverage: '$(OS)'
+    CodeCoverage: 'true'
 
 - powershell: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1'
   displayName: 'Copy Common PowerShell Modules Into Tasks'
