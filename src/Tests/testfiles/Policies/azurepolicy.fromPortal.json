@@ -1,0 +1,40 @@
+{
+    "Name": "DenyCostCenterFromRg",
+    "ResourceId": "/providers/Microsoft.Authorization/policyDefinitions/DenyCostCenterFromRg",
+    "ResourceName": "DenyCostCenterFromRg",
+    "ResourceType": "Microsoft.Authorization/policyDefinitions",
+    "Properties": {
+        "displayName": "Deny if cost center tag value from parent resource group not valid",
+        "policyType": "Static",
+        "mode": "Indexed",
+        "description": "Enforces the required tag 'CC' (cost center) value from the parent resource groups to the child resource.",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "SHH Tagging",
+            "additionalMetadataId": "/providers/Microsoft.PolicyInsights/policyMetadata/ACF1599"
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [{
+                        "not": {
+                            "field": "tags.CC",
+                            "equals": "[resourceGroup().tags.CC]"
+                        }
+                    },
+                    {
+                        "field": "tags.CC",
+                        "exists": "true"
+                    },
+                    {
+                        "field": "[resourceGroup().tags.CC]",
+                        "exists": "true"
+                    }
+                ]
+            },
+            "then": {
+                "effect": "deny"
+            }
+        }
+    },
+    "PolicyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/DenyCostCenterFromRg"
+}
