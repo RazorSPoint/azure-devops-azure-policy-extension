@@ -2,9 +2,9 @@
 $WarningPreference = "SilentlyContinue"
 $currentPath = (Split-Path -Parent $MyInvocation.MyCommand.Path)
 . $currentPath\Common\SetEnvironment.ps1
-Import-Module "$currentPath\..\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue
+Import-Module "$currentPath\..\src\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue
 
-. $currentPath\..\ps_modules\CommonScripts\GovernanceUtility.ps1
+. $currentPath\..\src\ps_modules\CommonScripts\GovernanceUtility.ps1
 $WarningPreference = "Continue"
 
 Describe 'Governance Utility Tests' {

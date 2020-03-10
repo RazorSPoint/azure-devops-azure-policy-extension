@@ -3,9 +3,9 @@ Set-StrictMode -Version Latest
 $currentPath = (Split-Path -Parent $MyInvocation.MyCommand.Path)
 . $currentPath\Common\SetEnvironment.ps1
 
-Import-Module "$currentPath\..\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+Import-Module "$currentPath\..\src\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
 
-. $currentPath\..\ps_modules\CommonScripts\GovernanceUtility.ps1
+. $currentPath\..\src\ps_modules\CommonScripts\GovernanceUtility.ps1
 
 Describe 'Azure Policy V2 Tests' {
 

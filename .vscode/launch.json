@@ -14,6 +14,15 @@
           "cwd": "${workspaceRoot}"
        },
        {
+         "type": "PowerShell",
+         "request": "launch",
+         "name": "PowerShell All Pester Tests with Code Coverage",
+         "script": "Invoke-Pester",
+         "args": ["-Script",
+         ".Tests"],
+         "cwd": "${workspaceRoot}"
+      },
+       {
           "type": "PowerShell",
           "request": "launch",
           "name": "PowerShell Launch Current File",
