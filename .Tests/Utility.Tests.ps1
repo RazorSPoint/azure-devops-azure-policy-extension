@@ -210,15 +210,9 @@ Describe 'Governance Utility Tests' {
         $json = '{"JsonProp":"JsonVal"}'
         $env:AGENT_RELEASEDIRECTORY = $PSScriptRoot
 
-        It -Name "File created has been created" { 
-
+        It -Name "File created has been created" {
             $filePath = Add-TemporaryJsonFile -JsonInline $json
             $filePath | Should -Exist
-
-            Write-Output "HUHU: $filePath"
-            Write-Output "HAHA: $(Test-Path $filePath)"
-
-            Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue            
         }
 
         It -Name "File with JSON should be like input JSON" { 
