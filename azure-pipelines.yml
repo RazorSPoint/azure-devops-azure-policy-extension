@@ -16,7 +16,7 @@ steps:
   inputs:
     preferBundledVersion: false
 
-- powershell: 'tree F/'
+- powershell: 'tree $(Build.SourcesDirectory) F/'
   displayName: 'Show Files'
   condition: true
 
@@ -24,7 +24,7 @@ steps:
   parameters:
     CodeCoverage: 'false'
 
-- powershell: 'tree F/'
+- powershell: 'tree $(Build.SourcesDirectory) F/'
   displayName: 'Show Files'
   condition: true
 
