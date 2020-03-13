@@ -213,6 +213,8 @@ Describe 'Governance Utility Tests' {
         It -Name "File created has been created" {
             $filePath = Add-TemporaryJsonFile -JsonInline $json
             $filePath | Should -Exist
+
+            Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue   
         }
 
         It -Name "File with JSON should be like input JSON" { 
