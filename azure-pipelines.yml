@@ -16,9 +16,17 @@ steps:
   inputs:
     preferBundledVersion: false
 
+- powershell: 'tree $(Build.SourcesDirectory) F/'
+  displayName: 'Show Files'
+  condition: true
+
 - template: YamlTemplates/unitTests.yml
   parameters:
     CodeCoverage: 'false'
+
+- powershell: 'tree $(Build.SourcesDirectory) F/'
+  displayName: 'Show Files'
+  condition: true
 
 - powershell: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1'
   displayName: 'Copy Common PowerShell Modules Into Tasks'
