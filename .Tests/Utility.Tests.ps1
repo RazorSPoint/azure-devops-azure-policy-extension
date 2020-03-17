@@ -63,7 +63,7 @@ Describe 'Governance Utility Tests' {
             return (Get-Item -LiteralPath $path).Value
         }
 
-        Mock Confirm-FileExists
+        Mock Confirm-FileExists { }
 
         Mock Get-GovernanceFullDeploymentParameters{
             return  @{
