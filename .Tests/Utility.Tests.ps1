@@ -1,3 +1,4 @@
+Set-StrictMode -Version Latest
 
 $WarningPreference = "SilentlyContinue"
 $currentPath = (Split-Path -Parent $MyInvocation.MyCommand.Path)
@@ -212,6 +213,9 @@ Describe 'Governance Utility Tests' {
 
         It -Name "File created has been created" {
             $filePath = Add-TemporaryJsonFile -JsonInline $json
+
+            Write-Verbose $filePath -Verbose
+
             $filePath | Should -Exist
 
             Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue   
