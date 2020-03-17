@@ -292,3 +292,4 @@ __pycache__/
 #custom solution files
 src/overview.md
 src/AzurePolicy/AzurePolicyV1/ps_modules/**
+coverage.xml
