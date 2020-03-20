@@ -90,13 +90,15 @@ function Get-GovernanceFullDeploymentParameters {
     [CmdletBinding()]
     [CmdletBinding(DefaultParameterSetName = 'Subscription')]
     param(
-        [Parameter(Mandatory = $true, Position = 0)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Subscription')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ManagementGroup')]
         [string]$GovernanceFilePath,
         [Parameter(Mandatory = $true, ParameterSetName = 'Subscription')]
         [string]$SubscriptionId,
         [Parameter(Mandatory = $true, ParameterSetName = 'ManagementGroup')]
         [string]$ManagementGroupId,
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Subscription')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ManagementGroup')]
         [ValidateSet("PolicyDefinition", "PolicyInitiative")]
         [String]
         $GovernanceType
