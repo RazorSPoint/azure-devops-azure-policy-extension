@@ -98,8 +98,9 @@ Describe 'Governance Utility Tests' {
         It -Name "Get parameters for the from test case file '<TestDataFile>' should match returning parameters"  -TestCases @(
             @{TestDataFile = "policy.managementgroup.Full-File" }
             @{TestDataFile = "policy.subscription.Full-File" }
-            @{TestDataFile = "policy.managementgroup.Full-Inline" }
             @{TestDataFile = "policy.subscription.Full-Inline" }
+            @{TestDataFile = "policy.managementgroup.Full-Inline" }
+            
         ) {
             param ($TestDataFile) 
             _setGovernanceEnvironment -Path "$currentPath\testfiles\TestCases\$TestDataFile.json"
