@@ -67,6 +67,9 @@ Describe 'Governance Utility Tests' {
         Mock Confirm-FileExists { }
 
         Mock Get-GovernanceFullDeploymentParameters{
+
+            Write-Output $args
+
             return  @{
                 Name        = $policy.name
                 DisplayName = $policy.properties.displayName
