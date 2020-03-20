@@ -43,20 +43,4 @@ Describe 'Azure Policy V1 Tests' {
         }      
 
     }
-
-    Context -Name "DeployFullPolicyDefinition.ps1" {
-
-    }
-
-    Context -Name "DeployFullPolicyInitiative.ps1" {
-        
-    }
-
-    Context -Name "DeploySplittedPolicyDefinition.ps1" {
-        
-    }
-
-    Context -Name "DeploySplittedPolicyInitiative.ps1" {
-        
-    }
 }

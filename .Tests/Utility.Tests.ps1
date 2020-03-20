@@ -68,7 +68,7 @@ Describe 'Governance Utility Tests' {
 
         Mock Get-GovernanceFullDeploymentParameters{
 
-            Write-Output $args
+            Write-Host $args
 
             return  @{
                 Name        = $policy.name
