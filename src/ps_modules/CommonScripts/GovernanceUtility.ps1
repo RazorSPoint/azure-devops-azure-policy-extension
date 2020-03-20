@@ -183,7 +183,10 @@ function Get-GovernanceDeploymentParameters {
        
             $parameters.GovernanceFilePath = $JsonFilePath 
         
-            Write-Host ($parameters | ConvertTo-Json -Depth 50)
+            $parameters | Foreach-Object {
+                Write-Host $_
+            }
+
             $parameters = Get-GovernanceFullDeploymentParameters @parameters -GovernanceType $GovernanceType
         }
         elseif ($DeploymentType -eq "Splitted") {       
