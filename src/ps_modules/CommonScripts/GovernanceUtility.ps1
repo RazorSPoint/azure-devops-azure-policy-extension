@@ -185,8 +185,8 @@ function Get-GovernanceDeploymentParameters {
        
             $parameters.GovernanceFilePath = $JsonFilePath 
         
-            $parameters | Foreach-Object {
-                Write-Host $_
+            $parameters.Keys | Foreach-Object { 
+                Write-Host "key = $_ , value = $($hash.Item($_))"
             }
 
             $parameters = Get-GovernanceFullDeploymentParameters @parameters -GovernanceType $GovernanceType
