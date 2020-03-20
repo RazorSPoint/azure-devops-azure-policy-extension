@@ -4,8 +4,8 @@
     "SubscriptionId": "2b53247c-fb65-469e-a711-46e0c29d15a1",
     "ConnectedServiceName": "52993cc3-6410-43ff-a3d9-c9b11e44e1c3",
     "FileOrInline": "Inline",
-    "JsonInline": "{ 'Some':'Json'}",
     "GovernanceType": "PolicyDefinition",
     "DefinitionLocation": "Subscription",
-    "DeploymentType": "Full"
+    "DeploymentType": "Full",
+    "JsonInline": "{ 'Some':'Json'}"
 }
