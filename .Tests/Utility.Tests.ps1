@@ -83,9 +83,9 @@ Describe 'Governance Utility Tests' {
 
         It -Name "Get parameters for the from test case file '<TestDataFile>' should not throw exception"  -TestCases @(
             @{TestDataFile = "policy.managementgroup.Full-File.json" }
-            @{TestDataFile = "policy.subscription.Full-File.json" }
-            @{TestDataFile = "policy.managementgroup.Full-Inline.json" }
+            @{TestDataFile = "policy.subscription.Full-File.json" }            
             @{TestDataFile = "policy.subscription.Full-Inline.json" }
+            @{TestDataFile = "policy.managementgroup.Full-Inline.json" }
         ) {
             param ($TestDataFile) 
             _setGovernanceEnvironment -Path "$currentPath\testfiles\TestCases\$TestDataFile"
