@@ -6,17 +6,17 @@ function Add-TemporaryJsonFile {
         $JsonInline,
         [Parameter(Mandatory = $true)]
         [String]
-        $TempPath
+        $TempPath,
+        [Parameter(Mandatory = $true)]
+        [String]
+        $FileName
     )
         
     process {
 
-        #get random temporary file name
-        $tmpInlineJsonFileName = [System.IO.Path]::GetRandomFileName() + ".json"      
-         
         $JsonObject = New-Object -TypeName "PSCustomObject"
         try {
-            $JsonFilePath = "$TempPath/$tmpInlineJsonFileName"
+            $JsonFilePath = "$TempPath/$FileName"
 
             #if path not exists, create it!
             if (-not (Test-Path -Path $TempPath)) {
@@ -35,35 +35,17 @@ function Add-TemporaryJsonFile {
     
 }
 
-function Clear-GovernanceEnvironment {
+function Get-TemporaryFileName {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [String]
-        $TemporaryFilePath
+        [ValidateSet("xml","json")]
+        $FileExtension = "json"
     )
-    
     process {
-        #clean up tmp path
-        if (Test-Path -LiteralPath $TemporaryFilePath) {
-            Remove-Item -LiteralPath $TemporaryFilePath -ErrorAction 'SilentlyContinue'
-        }
-    }
-
-}
-
-function Write-GovernanceError {
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory = $true)]
-        [Object]
-        $Exception
-    )
-    
-    process {        
-        $ErrorMessage = $Exception.Exception.Message
-        Write-VstsTaskError -Message "`nAn Error occured. The error message was: $ErrorMessage. `n Stackstace `n $($Exception.ScriptStackTrace)`n"
-        Write-VstsSetResult -Result 'Failed' -Message "Error detected" -DoNotThrow
+        #get random temporary file name
+        Write-Output ([System.IO.Path]::GetRandomFileName() + ".$FileExtension")
     }
 }
 
@@ -85,7 +67,20 @@ function Confirm-FileExists {
     }
 }
 
-
+function Write-GovernanceError {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [Object]
+        $Exception
+    )
+    
+    process {        
+        $ErrorMessage = $Exception.Exception.Message
+        Write-VstsTaskError -Message "`nAn Error occured. The error message was: $ErrorMessage. `n Stackstace `n $($Exception.ScriptStackTrace)`n"
+        Write-VstsSetResult -Result 'Failed' -Message "Error detected" -DoNotThrow
+    }
+}
 
 function Get-GovernanceFullDeploymentParameters {
     [CmdletBinding()]
@@ -147,7 +142,6 @@ function Get-GovernanceFullDeploymentParameters {
                
     }
 }
-
 function Get-GovernanceDeploymentParameters {
     [CmdletBinding()]
     param(
@@ -157,7 +151,10 @@ function Get-GovernanceDeploymentParameters {
         $GovernanceType,
         [Parameter(Mandatory = $true)]
         [String]
-        $TempPath     
+        $TempPath,
+        [Parameter(Mandatory = $true)]
+        [String]
+        $TempFileName  
     )
 
     process {
@@ -171,7 +168,7 @@ function Get-GovernanceDeploymentParameters {
             $parameters.SubscriptionId = Get-VstsInput -Name SubscriptionId
         }
         elseif ($DefinitionLocation -eq "ManagementGroup") {
-            $parameters.ManagementGroupId =  Get-VstsInput -Name ManagementGroupName
+            $parameters.ManagementGroupId = Get-VstsInput -Name ManagementGroupName
         }
 
         if ($DeploymentType -eq "Full") {
@@ -184,7 +181,7 @@ function Get-GovernanceDeploymentParameters {
             }
             else {            
                 [string]$JsonInline = (Get-VstsInput -Name JsonInline)
-                $JsonFilePath = Add-TemporaryJsonFile -JsonInline $JsonInline -TempPath $TempPath
+                $JsonFilePath = Add-TemporaryJsonFile -JsonInline $JsonInline -TempPath $TempPath -FileName $TempFileName
             }
        
             $parameters.GovernanceFilePath = $JsonFilePath 
@@ -223,4 +220,128 @@ function Get-GovernanceDeploymentParameters {
         return $parameters
     }
 
+}
+
+function Publish-SplittedPolicyDefinition {
+    [CmdletBinding(DefaultParameterSetName = 'Subscription')]
+    param(
+        [Parameter(Mandatory = $true, ParameterSetName = 'Subscription')]
+        [string]$SubscriptionId,
+        [Parameter(Mandatory = $true, ParameterSetName = 'ManagementGroup')]
+        [string]$ManagementGroupId,
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string]$Name,
+        [Parameter(Mandatory = $true, Position = 1)]
+        [string]$DisplayName,
+        [Parameter(Mandatory = $true, Position = 2)]
+        [string]$Description,
+        [Parameter(Mandatory = $true, Position = 3)]
+        [string]$Metadata,
+        [Parameter(Mandatory = $true, Position = 4)]
+        [ValidateSet("all", "indexed")]
+        [string]$Mode,
+        [Parameter(Mandatory = $true, Position = 5)]
+        [string]$Parameters,
+        [Parameter(Mandatory = $true, Position = 6)]
+        [string]$PolicyRule
+    )
+
+    process {
+
+        $policyParameter = @{
+            Policy      = $PolicyRule 
+            Name        = $Name 
+            DisplayName = $DisplayName 
+            Description = $Description 
+            Metadata    = $Metadata 
+            Parameter   = $Parameters
+        }
+
+        $scope = @{ }
+
+        if ($PSCmdlet.ParameterSetName -eq "Subscription") {
+            $scope = @{ SubscriptionId = $SubscriptionId }
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq "ManagementGroup") {
+            $scope = @{ ManagementGroupName = $ManagementGroupId }   
+        }
+
+        $policy = $null
+        try {
+            Write-Output "Checking if the policy '$Name' already exists."
+            $policy = Get-AzPolicyDefinition -Name $Name @scope -ErrorAction SilentlyContinue    
+        }
+        catch { }  
+
+        if ($policy) {
+            Write-Output "Policy '$Name' exists and will be updated."
+            $policy = Set-AzPolicyDefinition @scope @policyParameter
+        }
+        else {
+            Write-Output "Policy '$Name' does not exist and will be created."
+            $policyParameter.Mode = $Mode 
+            $policy = New-AzPolicyDefinition @scope @policyParameter
+        }
+
+        Write-VstsTaskVerbose ($policy | ConvertTo-Json)
+    }
+}
+
+function Publish-SplittedPolicyInitiative {
+    [CmdletBinding(DefaultParameterSetName = 'Subscription')]
+    param(
+        [Parameter(Mandatory = $true, ParameterSetName = 'Subscription')]
+        [string]$SubscriptionId,
+        [Parameter(Mandatory = $true, ParameterSetName = 'ManagementGroup')]
+        [string]$ManagementGroupId,
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+        [Parameter(Mandatory = $true)]
+        [string]$DisplayName,
+        [Parameter(Mandatory = $true)]
+        [string]$Description,
+        [Parameter(Mandatory = $true)]
+        [string]$Metadata,
+        [Parameter(Mandatory = $true)]
+        [string]$Parameters,
+        [Parameter(Mandatory = $true)]
+        [string]$PolicyDefinition
+    )
+    process {
+        $initiativeParameters = @{
+            PolicyDefinition = $PolicyDefinition
+            Name             = $Name
+            DisplayName      = $DisplayName
+            Description      = $Description
+            Metadata         = $Metadata
+            Parameter        = $Parameters
+        }
+
+        $scope = @{ }
+
+        if ($PSCmdlet.ParameterSetName -eq "Subscription") {
+            $scope = @{ SubscriptionId = $SubscriptionId }
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq "ManagementGroup") {
+            $scope = @{ ManagementGroupName = $ManagementGroupId }   
+        }
+
+        $policy = $null
+        try {
+            Write-Output "Checking if the policy set (Intiative) '$Name' already exists."
+            $policy = Get-AzPolicySetDefinition -Name $Name @scope -ErrorAction SilentlyContinue
+        }
+        catch { }  
+
+        if ($policy) {
+            Write-Output "Policy set (Intiative) '$Name' exists and will be updated."
+            $policy = Set-AzPolicySetDefinition @scope @initiativeParameters
+        }
+        else {
+            Write-Output "Policy set (Intiative) '$Name' does not exist and will be created."
+            $policy = New-AzPolicySetDefinition @scope @initiativeParameters
+        }
+
+        Write-VstsTaskVerbose ($policy | ConvertTo-Json)
+    }
 }

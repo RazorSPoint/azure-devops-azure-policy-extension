@@ -76,7 +76,7 @@ Describe 'Azure Policy V2 Tests' {
             }
 
             {
-              #  $null = . $currentPath\..\src\AzurePolicy\AzurePolicyV2\DeploySplittedPolicyDefinition.ps1 @tmpPolicy -ErrorAction Stop
+              $null = . $currentPath\..\src\AzurePolicy\AzurePolicyV2\DeploySplittedPolicyDefinition.ps1 @tmpPolicy -ErrorAction Stop
             } | Should -Not -Throw
 
         }

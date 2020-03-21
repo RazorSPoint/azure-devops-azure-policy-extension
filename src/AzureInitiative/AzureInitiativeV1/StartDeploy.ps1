@@ -1,14 +1,9 @@
 . $PSScriptRoot\ps_modules\CommonScripts\GovernanceUtility.ps1
-
-$JsonFilePath = $null
-    
+. $PSScriptRoot\ps_modules\CommonScripts\ModuleUtility.ps1
 
 $parameters = @{ }
   
 try {
-      
-    . $PSScriptRoot\ps_modules\CommonScripts\ModuleUtility.ps1
-
     $serviceName = Get-VstsInput -Name ConnectedServiceName -Require
     $endpointObject = Get-VstsEndpoint -Name $serviceName -Require
     $endpoint = ConvertTo-Json $endpointObject
@@ -17,16 +12,20 @@ try {
 
     # get the tmp path of the agent
     $agentTmpPath = "$($env:AGENT_RELEASEDIRECTORY)\_temp"
+    $tempFileName = Get-TemporaryFileName
   
-    $parameters = Get-GovernanceDeploymentParameters -GovernanceType PolicyInitiative -TempPath $agentTmpPath
+    $parameters = Get-GovernanceDeploymentParameters -GovernanceType PolicyInitiative -TempPath $agentTmpPath -TempFileName $tempFileName
 
-    . "$PSScriptRoot\DeploySplittedPolicyInitiative.ps1" @parameters
+    Publish-SplittedPolicyInitiative @parameters
 }
 catch {
     Write-GovernanceError -Exception $_ 
 }
 finally {
-    Clear-GovernanceEnvironment -TemporaryFilePath $JsonFilePath
+    if (Test-Path -LiteralPath "$agentTmpPath/$tempFileName") {
+        Remove-Item -LiteralPath "$agentTmpPath/$tempFileName" -ErrorAction 'SilentlyContinue'
+    }
+
     Import-Module $PSScriptRoot\..\VstsAzureHelpers_
     Remove-EndpointSecrets
     Disconnect-AzureAndClearContext -ErrorAction SilentlyContinue

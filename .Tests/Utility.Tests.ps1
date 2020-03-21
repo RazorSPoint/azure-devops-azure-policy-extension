@@ -1,12 +1,10 @@
 Set-StrictMode -Version Latest
 
-$WarningPreference = "SilentlyContinue"
 $currentPath = (Split-Path -Parent $MyInvocation.MyCommand.Path)
 . $currentPath\Common\SetEnvironment.ps1
 Import-Module "$currentPath\..\src\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue
 
 . $currentPath\..\src\ps_modules\CommonScripts\GovernanceUtility.ps1
-$WarningPreference = "Continue"
 
 Describe 'Governance Utility Tests' {
 
@@ -91,7 +89,7 @@ Describe 'Governance Utility Tests' {
             _setGovernanceEnvironment -Path "$currentPath\testfiles\TestCases\$TestDataFile"
             $governanceType = (Get-Content -Path "$currentPath\testfiles\TestCases\$TestDataFile" -Raw | ConvertFrom-Json)."GovernanceType"
             {                 
-                Get-GovernanceDeploymentParameters -GovernanceType $governanceType -TempPath "C:\_temp"
+                Get-GovernanceDeploymentParameters -GovernanceType $governanceType -TempPath "C:\_temp" -TempFileName "12bed85d-f556-479c-86a6-78239d6a8c96.json"
             } | Should -Not -Throw
         }
 
@@ -108,7 +106,7 @@ Describe 'Governance Utility Tests' {
             $governanceType = (Get-Content -Path "$currentPath\testfiles\TestCases\$TestDataFile.json" -Raw | ConvertFrom-Json)."GovernanceType"            
             $expectedParameters = (Get-Content -Path "$currentPath\testfiles\ReturnData\$TestDataFile.return.json" -Raw | ConvertFrom-Json)
 
-            $ouputParameters = Get-GovernanceDeploymentParameters -GovernanceType $governanceType -TempPath "C:\_temp"
+            $ouputParameters = Get-GovernanceDeploymentParameters -GovernanceType $governanceType -TempPath "C:\_temp" -TempFileName "12bed85d-f556-479c-86a6-78239d6a8c96.json"
 
             $expectedParamNames = ($expectedParameters | Get-Member -MemberType NoteProperty).Name
             foreach ($parameterName in $expectedParamNames) {
@@ -187,29 +185,7 @@ Describe 'Governance Utility Tests' {
             $fullErrorMessage | Should -BeLike "*MyErrorMessage $errorMessage.*"
         }
 
-    }
-
-    Context "Clear-GovernanceEnvironment" {
-
-        It -Name "Temporary file should not exist anymore" {
-
-            $tmpInlineJsonFileName = "$PSScriptRoot/$([System.IO.Path]::GetRandomFileName()).json"
-            "{}" | Out-File $tmpInlineJsonFileName
-
-            Clear-GovernanceEnvironment -TemporaryFilePath $tmpInlineJsonFileName
-
-            $tmpInlineJsonFileName | Should -Not -Exist
-        }
-
-        It -Name "Non existing temporary file should not throw" {
-
-            $tmpInlineJsonFileName = "$PSScriptRoot/$([System.IO.Path]::GetRandomFileName()).json"
-
-            { Clear-GovernanceEnvironment -TemporaryFilePath $tmpInlineJsonFileName } | Should -Not -Throw
-
-        }
-
-    }
+    }    
 
     Context "Add-TemporaryJsonFile" {
 
@@ -222,7 +198,7 @@ Describe 'Governance Utility Tests' {
         $env:AGENT_RELEASEDIRECTORY = $PSScriptRoot
 
         It -Name "File created has been created" {
-            $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp"
+            $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "12bed85d-f556-479c-86a6-78239d6a8c96.json"
             $filePath | Should -Exist
 
             Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue   
@@ -230,7 +206,7 @@ Describe 'Governance Utility Tests' {
 
         It -Name "File with JSON should be like input JSON" { 
 
-            $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp"
+            $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "12bed85d-f556-479c-86a6-78239d6a8c96.json"
             $fileContent = Get-Content -Path $filePath -Raw
             $fileContent | Should -BeLike "*$json*"
 
@@ -241,7 +217,7 @@ Describe 'Governance Utility Tests' {
 
             $json = '{JsonProp":"JsonVal"}'
 
-            $null = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp"
+            $null = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "12bed85d-f556-479c-86a6-78239d6a8c96.json"
 
             Assert-MockCalled Write-VstsTaskError -Exactly -Scope It -Times 1 -ParameterFilter {
                 $Message -like "Invalid object passed in*"
