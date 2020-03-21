@@ -168,6 +168,12 @@ Describe 'Governance Utility Tests' {
 
     Context "Write-GovernanceError" {
 
+        Mock Write-VstsSetResult {}
+
+        Mock Write-VstsTaskError {
+            return "MyErrorMessage $Exception."
+        }
+
         It -Name "Should throw an error message" {
 
             $errorMessage = "Some error"
@@ -176,9 +182,9 @@ Describe 'Governance Utility Tests' {
                 throw $errorMessage
             }
             catch {
-                $fullErrorMessage = Write-GovernanceError $_
+                $fullErrorMessage = Write-GovernanceError -Exception $_
             }
-            $fullErrorMessage | Should -BeLike "*An Error occured. The error message was: $errorMessage.*"
+            $fullErrorMessage | Should -BeLike "*MyErrorMessage $errorMessage.*"
         }
 
     }
