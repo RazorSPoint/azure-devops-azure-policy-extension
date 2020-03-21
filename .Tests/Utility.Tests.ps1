@@ -2,8 +2,8 @@ Set-StrictMode -Version Latest
 
 $WarningPreference = "SilentlyContinue"
 $currentPath = (Split-Path -Parent $MyInvocation.MyCommand.Path)
-. $currentPath\Common\SetEnvironment.ps1
 Import-Module "$currentPath\..\src\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue
+. $currentPath\Common\SetEnvironment.ps1
 
 . $currentPath\..\src\ps_modules\CommonScripts\GovernanceUtility.ps1
 $WarningPreference = "Continue"
