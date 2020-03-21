@@ -2,8 +2,8 @@ Set-StrictMode -Version Latest
 
 $WarningPreference = "SilentlyContinue"
 $currentPath = (Split-Path -Parent $MyInvocation.MyCommand.Path)
-Import-Module "$currentPath\..\src\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue
 . $currentPath\Common\SetEnvironment.ps1
+Import-Module "$currentPath\..\src\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue
 
 . $currentPath\..\src\ps_modules\CommonScripts\GovernanceUtility.ps1
 $WarningPreference = "Continue"
@@ -91,7 +91,7 @@ Describe 'Governance Utility Tests' {
             _setGovernanceEnvironment -Path "$currentPath\testfiles\TestCases\$TestDataFile"
             $governanceType = (Get-Content -Path "$currentPath\testfiles\TestCases\$TestDataFile" -Raw | ConvertFrom-Json)."GovernanceType"
             {                 
-                Get-GovernanceDeploymentParameters -GovernanceType $governanceType 
+                Get-GovernanceDeploymentParameters -GovernanceType $governanceType -TempPath "C:\_temp"
             } | Should -Not -Throw
         }
 
@@ -108,7 +108,7 @@ Describe 'Governance Utility Tests' {
             $governanceType = (Get-Content -Path "$currentPath\testfiles\TestCases\$TestDataFile.json" -Raw | ConvertFrom-Json)."GovernanceType"            
             $expectedParameters = (Get-Content -Path "$currentPath\testfiles\ReturnData\$TestDataFile.return.json" -Raw | ConvertFrom-Json)
 
-            $ouputParameters = Get-GovernanceDeploymentParameters -GovernanceType $governanceType 
+            $ouputParameters = Get-GovernanceDeploymentParameters -GovernanceType $governanceType -TempPath "C:\_temp"
 
             $expectedParamNames = ($expectedParameters | Get-Member -MemberType NoteProperty).Name
             foreach ($parameterName in $expectedParamNames) {
@@ -216,7 +216,7 @@ Describe 'Governance Utility Tests' {
         $env:AGENT_RELEASEDIRECTORY = $PSScriptRoot
 
         It -Name "File created has been created" {
-            $filePath = Add-TemporaryJsonFile -JsonInline $json
+            $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp"
 
             Write-Verbose $filePath -Verbose
 
@@ -227,7 +227,7 @@ Describe 'Governance Utility Tests' {
 
         It -Name "File with JSON should be like input JSON" { 
 
-            $filePath = Add-TemporaryJsonFile -JsonInline $json
+            $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp"
             $fileContent = Get-Content -Path $filePath -Raw
             $fileContent | Should -BeLike "*$json*"
 
@@ -238,7 +238,7 @@ Describe 'Governance Utility Tests' {
 
             $json = '{JsonProp":"JsonVal"}'
 
-            $null = Add-TemporaryJsonFile -JsonInline $json
+            $null = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp"
 
             Assert-MockCalled Write-VstsTaskError -Exactly -Scope It -Times 1 -ParameterFilter {
                 $Message -like "Invalid object passed in*"

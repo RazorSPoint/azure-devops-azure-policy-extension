@@ -15,7 +15,10 @@ try {
 
     . $PSScriptRoot\ps_modules\CommonScripts\CoreAz.ps1 -endpoint "$endpoint"  
 
-    $parameters = Get-GovernanceDeploymentParameters -GovernanceType PolicyInitiative
+    # get the tmp path of the agent
+    $agentTmpPath = "$($env:AGENT_RELEASEDIRECTORY)\_temp"
+  
+    $parameters = Get-GovernanceDeploymentParameters -GovernanceType PolicyInitiative -TempPath $agentTmpPath
 
     . "$PSScriptRoot\DeploySplittedPolicyInitiative.ps1" @parameters
 }

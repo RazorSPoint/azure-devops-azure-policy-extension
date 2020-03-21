@@ -21,13 +21,11 @@ function _setAgentEnvironment {
     process {        
         $env:SYSTEM_CULTURE = "en-us"
         $env:AGENT_TEMPDIRECTORY = "C:\temp\"
-        $env:AGENT_RELEASEDIRECTORY = "C:"
         $env:AGENT_VERSION = "2.165.0"
         $env:AGENT_PROXYURL = "https://my.proxy.url"
         $env:AGENT_PROXYUSERNAME = "ProxyUserName"
         $env:AGENT_PROXYPASSWORD = "ProxyPassword"
         $env:AGENT_PROXYBYPASSLIST = ("http://myserver", "http://companysite" ) | ConvertTo-Json
-
     }
 }
 

@@ -3,23 +3,23 @@ function Add-TemporaryJsonFile {
     param (
         [Parameter(Mandatory = $true)]
         [String]
-        $JsonInline
+        $JsonInline,
+        [Parameter(Mandatory = $true)]
+        [String]
+        $TempPath
     )
         
     process {
-        
-        # get the tmp path of the agent
-        $agentTmpPath = "$($env:AGENT_RELEASEDIRECTORY)\_temp"
 
         #get random temporary file name
         $tmpInlineJsonFileName = [System.IO.Path]::GetRandomFileName() + ".json"      
          
         $JsonObject = New-Object -TypeName "PSCustomObject"
         try {
-            $JsonFilePath = "$agentTmpPath/$tmpInlineJsonFileName"
+            $JsonFilePath = "$TempPath/$tmpInlineJsonFileName"
             #if path not exists, create it!
-            if (-not (Test-Path -Path $agentTmpPath)) {
-                New-Item -ItemType Directory -Force -Path $agentTmpPath
+            if (-not (Test-Path -Path $TempPath)) {
+                New-Item -ItemType Directory -Force -Path $TempPath
             }
             $JsonObject = ConvertFrom-Json -InputObject $JsonInline
             $null = $JsonObject | ConvertTo-Json -depth 100 -Compress | Out-File $JsonFilePath
@@ -153,7 +153,10 @@ function Get-GovernanceDeploymentParameters {
         [Parameter(Mandatory = $true)]
         [ValidateSet("PolicyDefinition", "PolicyInitiative")]
         [String]
-        $GovernanceType       
+        $GovernanceType,
+        [Parameter(Mandatory = $true)]
+        [String]
+        $TempPath     
     )
 
     process {
@@ -180,7 +183,7 @@ function Get-GovernanceDeploymentParameters {
             }
             else {            
                 [string]$JsonInline = (Get-VstsInput -Name JsonInline)
-                $JsonFilePath = Add-TemporaryJsonFile -JsonInline $JsonInline
+                $JsonFilePath = Add-TemporaryJsonFile -JsonInline $JsonInline -TempPath $TempPath
             }
        
             $parameters.GovernanceFilePath = $JsonFilePath 
