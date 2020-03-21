@@ -21,7 +21,7 @@ function Add-TemporaryJsonFile {
             Write-Host "`$JsonFilePath2= $JsonFilePath"
             #if path not exists, create it!
             if (-not (Test-Path -Path $TempPath)) {
-                New-Item -ItemType Directory -Force -Path $TempPath
+                $null = New-Item -ItemType Directory -Force -Path $TempPath
             }
             $JsonObject = ConvertFrom-Json -InputObject $JsonInline
             Write-Host "`$JsonObject= $JsonObject"
