@@ -17,11 +17,14 @@ function Add-TemporaryJsonFile {
         $JsonObject = New-Object -TypeName "PSCustomObject"
         try {
             $JsonFilePath = "$TempPath/$tmpInlineJsonFileName"
+            Write-Host "`$JsonFilePath1=$TempPath/$tmpInlineJsonFileName"
+            Write-Host "`$JsonFilePath2= $JsonFilePath"
             #if path not exists, create it!
             if (-not (Test-Path -Path $TempPath)) {
                 New-Item -ItemType Directory -Force -Path $TempPath
             }
             $JsonObject = ConvertFrom-Json -InputObject $JsonInline
+            Write-Host "`$JsonObject= $JsonObject"
             $null = $JsonObject | ConvertTo-Json -depth 100 -Compress | Out-File $JsonFilePath
 
             Write-Output $JsonFilePath
