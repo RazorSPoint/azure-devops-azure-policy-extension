@@ -15,6 +15,18 @@ Describe 'Governance Utility Tests' {
         return $Message
     }
 
+    Mock Get-VstsInput {
+        #return only env varaible initialized at the beginning
+        $path = "Env:INPUT_$Name"
+        return (Get-Item -LiteralPath $path).Value
+    }
+
+    Mock Get-VstsEndpoint {     
+        return _getEndPointEnvironment    
+    }
+
+    Mock Write-VstsTaskVerbose { return $null }
+
     Context "Get-GovernanceFullDeploymentParameters" {
 
         Mock Get-Content {
@@ -56,15 +68,9 @@ Describe 'Governance Utility Tests' {
 
         $policy = (Get-Content -Path "$currentPath\testfiles\Policies\azurepolicy.json" -Raw | ConvertFrom-Json)
 
-        Mock Get-VstsInput {
-            #return only env varaible initialized at the beginning
-            $path = "Env:INPUT_$Name"
-            return (Get-Item -LiteralPath $path).Value
-        }
-
         Mock Confirm-FileExists { }
 
-        Mock Get-GovernanceFullDeploymentParameters{
+        Mock Get-GovernanceFullDeploymentParameters {
 
             #Write-Host $args
 
@@ -112,8 +118,8 @@ Describe 'Governance Utility Tests' {
             foreach ($parameterName in $expectedParamNames) {
                 
                 $ouputParameters.ContainsKey($parameterName) `
-                 -and $ouputParameters[$parameterName] -eq $expectedParameters."$parameterName" `
-                 | Should -Be $true
+                    -and $ouputParameters[$parameterName] -eq $expectedParameters."$parameterName" `
+                | Should -Be $true
             }
         }
     }
@@ -166,7 +172,7 @@ Describe 'Governance Utility Tests' {
 
     Context "Write-GovernanceError" {
 
-        Mock Write-VstsSetResult {}
+        Mock Write-VstsSetResult { }
 
         Mock Write-VstsTaskError {
             return "MyErrorMessage $Exception."
@@ -225,5 +231,68 @@ Describe 'Governance Utility Tests' {
            
         }
 
+    }    
+
+    Context -Name "DeploySplittedPolicyDefinition.ps1" {
+
+
+        $policyParameters = Get-Content -Path "$currentPath/testfiles/Policies/azurepolicy.parameters.json" | ConvertFrom-Json
+        $policyRule = Get-Content -Path "$currentPath/testfiles/Policies/azurepolicy.json" | ConvertFrom-Json
+        $policyFromPortal = Get-Content -Path "$currentPath/testfiles/Policies/azurepolicy.fromPortal.json" | ConvertFrom-Json
+    
+        $policy = @{
+            Name        = "DenyCostCenterFromRg"       
+            DisplayName = "Deny if cost center tag value from parent resource group not valid"       
+            Description = "Enforces the required tag 'CC' (cost center) value from the parent resource groups to the child resource."       
+            Metadata    = "{ 'category': 'SHH Tagging' }"
+            Parameters  = $policyParameters | Out-String
+            Mode        = "indexed"
+            PolicyRule  = $policyRule | Out-String
+        }
+    
+        Mock Get-AzPolicyDefinition {
+            if ($Name -eq "DenyCostCenterFromRg") {
+                return $policyFromPortal 
+            }
+            else {
+                return $null
+            }
+        }
+    
+        Mock Set-AzPolicyDefinition { return $policyFromPortal }
+    
+        Mock New-AzPolicyDefinition { return $policyFromPortal }
+
+        It -Name "It does not throw errors for scope <Scope> and policy IsExisting = <IsExisting>" -TestCases @(
+            @{Scope = "Subscription"; IsExisting = $true }
+            @{Scope = "Subscription"; IsExisting = $false }
+            @{Scope = "ManagementGroup"; IsExisting = $true }
+            @{Scope = "ManagementGroup"; IsExisting = $false }
+        ) {
+            param ($Scope, $IsExisting)            
+
+            $tmpPolicy = $null
+            
+            $tmpPolicy = New-Object Hashtable
+            $policy.Keys | ForEach-Object {
+                $tmpPolicy[$_] = $policy[$_]
+            }
+            
+            if (!$IsExisting) {
+                $tmpPolicy.Name = "NonExistingPolicy"
+            }
+
+            if ($Scope -eq "Subscription") {
+                $tmpPolicy.SubscriptionId = "84756c8c-14a5-44c4-bf3b-e1592fbfcf38"                    
+            }
+            elseif ($Scope -eq "ManagementGroup") {
+                $tmpPolicy.ManagementGroupId = "8e769067-5d7d-4eb7-8b6f-ff47e4f3e8c1"
+            }
+
+            {
+                $null = Publish-SplittedPolicyDefinition @tmpPolicy -ErrorAction Stop
+            } | Should -Not -Throw
+
+        }
     }
 }
