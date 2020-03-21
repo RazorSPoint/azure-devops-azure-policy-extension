@@ -19,7 +19,7 @@
         "Minor": "0",
         "Patch": "0"
     },
-    "preview": true,
+    "preview": false,
     "minimumAgentVersion": "2.115.0",
     "instanceNameFormat": "Deploy Azure Initiative",
     "inputs": [
