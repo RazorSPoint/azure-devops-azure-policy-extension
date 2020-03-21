@@ -1,7 +1,11 @@
+[CmdletBinding()]
+param(
+	#output path of the build module
+    [string]$extensionPath,
+    [string]$outputPath
+)
 
-$currentPath = (Split-Path -Parent $MyInvocation.MyCommand.Path)
-
-$extensionFileJson = Get-Content -Path "$currentPath\..\src\vss-extension.json" | Out-String | ConvertFrom-Json
+$extensionFileJson = Get-Content -Path "$extensionPath\vss-extension.json" | Out-String | ConvertFrom-Json
 
 #copy only to used extension paths
 $extensionIds = $extensionFileJson.contributions.properties.name
@@ -10,7 +14,7 @@ $extensionIds | ForEach-Object {
 
     $taskIdName = $_
 
-    $taskFolder = "$currentPath\..\src\$taskIdName"
+    $taskFolder = "$extensionPath\$taskIdName"
 
     $subfolders = Get-ChildItem -Path $taskFolder -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
 
@@ -21,7 +25,7 @@ $extensionIds | ForEach-Object {
         #remove any content from those folder, as they are temporary
         Remove-Item -Path $taskVersionFolder -Recurse -Force -ErrorAction SilentlyContinue
         #copy and overwrite all
-        Copy-Item -Path "$currentPath\..\src\ps_modules" -Destination $taskVersionFolder -Recurse -Force
+        Copy-Item -Path "$extensionPath\ps_modules" -Destination $taskVersionFolder -Recurse -Force
 
     }
 
