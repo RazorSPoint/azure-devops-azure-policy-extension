@@ -53,7 +53,7 @@ $extensionIds | ForEach-Object {
             $taskJson.version.Patch = $CommitsSinceVersionSource
         }
 
-        $taskJson | Set-Content "$($_.FullName)\task.json" -
+        Set-Content -Path "$($_.FullName)\task.json" -Value $taskJson
     }
 
 
