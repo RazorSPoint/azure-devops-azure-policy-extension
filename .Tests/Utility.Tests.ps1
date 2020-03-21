@@ -223,9 +223,6 @@ Describe 'Governance Utility Tests' {
 
         It -Name "File created has been created" {
             $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp"
-
-            Write-Verbose $filePath -Verbose
-
             $filePath | Should -Exist
 
             Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue   
