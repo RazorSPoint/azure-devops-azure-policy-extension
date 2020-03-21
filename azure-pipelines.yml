@@ -31,7 +31,7 @@ steps:
 
 - task: TfxInstaller@2
   inputs:
-    version: 'v0.6.x'
+    version: 'v0.7.x'
 
 - task: PackageVSTSExtension@1
   displayName: 'Package Extension for every branch except master'
