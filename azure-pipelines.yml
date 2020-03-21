@@ -8,7 +8,7 @@ trigger:
     include: [ develop ]
 
 pool:
-  vmImage: windows-latest
+  vmImage: macOS-latest
 
 steps:
 - task: GitVersion@5
@@ -18,15 +18,15 @@ steps:
 
 - template: YamlTemplates/unitTests.yml
   parameters:
-    CodeCoverage: 'false'
+    CodeCoverage: 'true'
 
-- powershell: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1'
+- pwsh: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1'
   displayName: 'Copy Common PowerShell Modules Into Tasks'
 
-- powershell: '$(Build.SourcesDirectory)/tools/GenerateChangelog.ps1'
+- pwsh: '$(Build.SourcesDirectory)/tools/GenerateChangelog.ps1'
   displayName: 'Generate Extension Readme.md'
 
-- powershell: '$(Build.SourcesDirectory)/tools/SetTaskVersion.ps1 -Major $(GitVersion.Major) -Minor $(GitVersion.Minor) -Patch $(GitVersion.CommitsSinceVersionSource)'
+- pwsh: '$(Build.SourcesDirectory)/tools/SetTaskVersion.ps1 -Major $(GitVersion.Major) -Minor $(GitVersion.Minor) -Patch $(GitVersion.CommitsSinceVersionSource)'
   displayName: 'Set Tasks Version'
 
 - task: TfxInstaller@2
