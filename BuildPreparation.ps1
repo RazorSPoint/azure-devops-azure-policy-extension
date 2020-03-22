@@ -1,5 +1,3 @@
-#https://www.powershellgallery.com/packages/VstsTaskSdk/0.11.0
-
 #parts of the script are taken from the VSTeam module https://github.com/RazorSPoint/vsteam
 [CmdletBinding(DefaultParameterSetName = "All")]
 param(
@@ -7,11 +5,6 @@ param(
     [Parameter(ParameterSetName = "All")]
     [Parameter(ParameterSetName = "UnitTest")]
     [string]$outputDir = './dist',
-
-    # By default the build will not install dependencies
-    [Parameter(ParameterSetName = "All")]
-    [Parameter(ParameterSetName = "UnitTest")]
-    [switch]$installDep,
 
     # run the scripts with the PS script analyzer
     [Parameter(ParameterSetName = "All")]
