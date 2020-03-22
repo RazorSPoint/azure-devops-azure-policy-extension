@@ -33,6 +33,7 @@ param(
     [switch]$codeCoverage
 )
 
+$sourcePath = "./src"
  
 if ([System.IO.Path]::IsPathRooted($outputDir)) {
     $output = $outputDir
@@ -42,22 +43,10 @@ else {
 }
  
 $output = [System.IO.Path]::GetFullPath($output)
- 
-if ($installDep.IsPresent -or $analyzeScript.IsPresent) {
-    # Load the psd1 file so you can read the required modules and install them 
-    if ($null -eq $(Get-Module -Name VstsTaskSdk)) {        
-        Save-Module -Name VstsTaskSdk -Repository PSGallery -Force -Path "./ps_modules" -AcceptLicense
-    }    
-}
 
-. ./tools/GenerateChangelog.ps1 `
-        -outputFilePath "./src/overview.md" `
-        -readmeFilePath "./README.md" `
-        -changelogFilePath "./docs/CHANGELOG.md"
+. ./tools/PrepareExtension.ps1 -sourcePath $sourcePath -outputDir $outputDir
 
-Copy-Item -Path "" -Destination $output -Recurse
- 
-Write-Output "Publish complete to $output"
+Write-Output "Publish complete to $outputDir"
 
 # run the unit tests with Pester
 if ($runTests.IsPresent) {

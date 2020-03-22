@@ -296,3 +296,4 @@ src/AzureInitiative/AzureInitiative*/ps_modules
 .Tests/_temp
 coverage.xml
 test-results.xml
+dist

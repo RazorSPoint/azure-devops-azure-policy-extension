@@ -2,13 +2,18 @@
 [CmdletBinding()]
 param(
 	#output path of the build module
-	[string]$outputPath,
+	[string]$outputFilePath,
 	[string]$readmeFilePath,
 	[string]$changelogFilePath
 )
 
-$content = Get-Content "$currentPath\..\README.md", "$currentPath\..\wiki\CHANGELOG.md"
+$content = Get-Content $readmeFilePath, $changelogFilePath
 $content = $content.Replace("../src/", "").Replace("src/", "")
-$content | Set-Content "$currentPath/../src/overview.md"
 
-New-ReleaseNotes $PSScriptRoot
+$distPath = Split-Path -Path $outputFilePath
+If(!(test-path $distPath))
+{
+      New-Item -ItemType Directory -Force -Path $distPath
+}
+
+$content | Set-Content $outputFilePath
