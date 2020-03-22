@@ -1,5 +1,5 @@
 . $PSScriptRoot\ps_modules\CommonScripts\GovernanceUtility.ps1
-. $PSScriptRoot\ps_modules\CommonScripts\ModuleUtility.ps1
+. $PSScriptRoot\ps_modules\CoreScripts\ModuleUtility.ps1
 
 $parameters = @{ }
   
@@ -8,7 +8,7 @@ try {
     $endpointObject = Get-VstsEndpoint -Name $serviceName -Require
     $endpoint = ConvertTo-Json $endpointObject
 
-    . $PSScriptRoot\ps_modules\CommonScripts\CoreAz.ps1 -endpoint "$endpoint"  
+    . $PSScriptRoot\ps_modules\CoreScripts\CoreAz.ps1 -endpoint "$endpoint"  
 
     # get the tmp path of the agent
     $agentTmpPath = "$($env:AGENT_RELEASEDIRECTORY)\_temp"
