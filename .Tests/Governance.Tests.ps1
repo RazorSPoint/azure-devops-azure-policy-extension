@@ -2,7 +2,13 @@ Set-StrictMode -Version Latest
 
 $currentPath = (Split-Path -Parent $MyInvocation.MyCommand.Path)
 . $currentPath\Common\SetEnvironment.ps1
-Import-Module "$currentPath\..\src\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue
+
+if ($null -eq $(Get-Module -Name VstsTaskSdk)) {
+    Install-Module -Name VstsTaskSdk -Repository PSGallery -Force -Scope CurrentUser -AllowClobber -SkipPublisherCheck  
+    Import-Module VstsTaskSdk  
+}
+
+Import-Module "$currentPath\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue
 
 . $currentPath\..\src\ps_modules\CommonScripts\GovernanceUtility.ps1
 

@@ -4,6 +4,10 @@ param(
     [string]$outputDir    
 )
 
+if(Test-Path $outputDir){
+   $null = Remove-Item -Path $outputDir -Recurse -Force 
+}
+
 . ./tools/GenerateChangelog.ps1 `
     -outputFilePath "$outputDir/overview.md" `
     -readmeFilePath "./README.md" `

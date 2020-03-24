@@ -48,7 +48,7 @@ if ($runTests.IsPresent) {
     }
  
     $pesterArgs = @{
-        Script       = '.\unit'  
+        Script       = '.\.Tests'  
         OutputFile   = 'test-results.xml'
         OutputFormat = 'NUnitXml'
         Show         = 'Fails'
@@ -84,7 +84,10 @@ if ($analyzeScript.IsPresent) {
         Install-Module -Name PSScriptAnalyzer -Repository PSGallery -Force -Scope CurrentUser
     }
  
-    $r = Invoke-ScriptAnalyzer -Path $output -Recurse
+    $r = Invoke-ScriptAnalyzer -Path "$output/AzureInitiative/AzureInitiativeV1/ps_modules/CommonScripts" -Recurse
+    $r += Invoke-ScriptAnalyzer -Path "$output/AzureInitiative/AzureInitiativeV1"
+    $r += Invoke-ScriptAnalyzer -Path "$output/AzurePolicy/AzurePolicyV1"
+    $r += Invoke-ScriptAnalyzer -Path "$output/AzurePolicy/AzurePolicyV2"
     $r | ForEach-Object { Write-Host "##vso[task.logissue type=$($_.Severity);sourcepath=$($_.ScriptPath);linenumber=$($_.Line);columnnumber=$($_.Column);]$($_.Message)" }
     Write-Output "Static code analysis complete."
 }

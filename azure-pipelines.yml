@@ -20,10 +20,14 @@ steps:
   parameters:
     CodeCoverage: 'true'
 
-- pwsh: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1'
+- pwsh: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1 -sourcePath "./src" -outputDir "./dist"'
   displayName: 'Copy Common PowerShell Modules Into Tasks'
 
-- pwsh: '$(Build.SourcesDirectory)/tools/GenerateChangelog.ps1'
+- pwsh: |
+    $(Build.SourcesDirectory)/tools/GenerateChangelog.ps1 
+    -outputFilePath "./dist/overview.md" `
+    -readmeFilePath "./README.md" `
+    -changelogFilePath "./docs/CHANGELOG.md"
   displayName: 'Generate Extension Readme.md'
 
 - pwsh: '$(Build.SourcesDirectory)/tools/SetTaskVersion.ps1 -Major $(GitVersion.Major) -Minor $(GitVersion.Minor) -Patch $(GitVersion.CommitsSinceVersionSource)'
