@@ -202,7 +202,7 @@ Describe 'Governance Utility Tests' {
     Context "Add-TemporaryJsonFile" {
 
         Mock Write-VstsTaskError {
-            #Write-Host $args
+            Write-Host $args
             return ""
         }
 
