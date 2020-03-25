@@ -218,18 +218,18 @@ Describe 'Governance Utility Tests' {
 
         It -Name "File with JSON should be like input JSON" { 
 
-            $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "12bed85d-f556-479c-86a6-78239d6a8c96.json"
+            $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "dd4e2c93-891d-4698-a7a6-9d497eceebad.json"
             $fileContent = Get-Content -Path $filePath -Raw
             $fileContent | Should -BeLike "*$json*"
 
-            Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue           
+            Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue
         }
 
         It -Name "Wrong JSON should return error message" { 
 
             $json = '{JsonProp":"JsonVal"}'
 
-            $null = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "12bed85d-f556-479c-86a6-78239d6a8c96.json"
+            $null = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "1755dc5e-3935-4783-9aaf-11d69435d1e4.json"
 
             Assert-MockCalled Write-VstsTaskError -Exactly -Scope It -Times 1 -ParameterFilter {
                 $Message -like "Invalid object passed in*"
