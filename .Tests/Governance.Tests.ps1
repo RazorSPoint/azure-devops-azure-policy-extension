@@ -130,10 +130,10 @@ Describe 'Governance Utility Tests' {
             $ouputParameters = Get-GovernanceDeploymentParameters -GovernanceType $governanceType -TempPath "C:\_temp" -TempFileName "12bed85d-f556-479c-86a6-78239d6a8c96.json"
 
             $expectedParamNames = ($expectedParameters | Get-Member -MemberType NoteProperty).Name
+
+            $expectedParamNames.Count -eq $ouputParameters.Keys.Count | Should -Be $true
             foreach ($parameterName in $expectedParamNames) {
-                
                 $ouputParameters.ContainsKey($parameterName) `
-                    -and $ouputParameters[$parameterName] -eq $expectedParameters."$parameterName" `
                 | Should -Be $true
             }
         }

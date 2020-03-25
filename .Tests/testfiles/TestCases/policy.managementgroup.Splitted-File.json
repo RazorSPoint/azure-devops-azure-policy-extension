@@ -6,6 +6,13 @@
     "FileOrInline": "File",
     "GovernanceType": "PolicyDefinition",
     "DefinitionLocation": "ManagementGroup",
-    "DeploymentType": "Full",
-    "JsonFilePath": "C:/testfiles/Policies/some.azurepolicy.json"
+    "DeploymentType": "Splitted",
+    "JsonFilePath": "C:/testfiles/Policies/some.azurepolicy.json",
+    "Category": "SomeCategory",
+    "Name": "Some-Name",
+    "DisplayName": "Some DisplayName",
+    "Mode": "all",
+    "Description": "Some Description",
+    "ParametersFilePath": ".Tests/testfiles/Policies/azurepolicy.parameters.json",
+    "PolicyRuleFilePath":  ".Tests/testfiles/Policies/azurepolicy.rules.json"
 }

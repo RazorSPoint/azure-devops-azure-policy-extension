@@ -103,7 +103,7 @@ function Get-GovernanceFullDeploymentParameters {
 
         Confirm-FileExists -FilePath $GovernanceFilePath -FileContext "the policy"
  
-        $governanceContent = Get-Content -Path $GovernanceFilePath | Out-String | ConvertFrom-Json
+        $governanceContent = Get-Content -Path $GovernanceFilePath -Raw | Out-String | ConvertFrom-Json
         $parameters = @{ }
 
         switch ($GovernanceType) {
@@ -199,21 +199,21 @@ function Get-GovernanceDeploymentParameters {
                 DisplayName = Get-VstsInput -Name DisplayName
                 Description = Get-VstsInput -Name Description
                 Metadata    = "{ 'category': '$Category' }"
-                Parameters  = Get-Content -Path $ParametersFilePath | Out-String
+                Parameters  =  Get-Content -Path $ParametersFilePath -Raw | Out-String
             }
 
             if ($GovernanceType -eq "PolicyInitiative") {
                 [string]$InitiativePolicyDefinitionsFilePath = Get-VstsInput -Name InitiativePolicyDefinitionsFilePath    
                 Confirm-FileExists -FilePath $InitiativePolicyDefinitionsFilePath -FileContext "Policy Rule"
     
-                $parameters.PolicyDefinition = Get-Content -Path $InitiativePolicyDefinitionsFilePath | Out-String        
+                $parameters.PolicyDefinition = Get-Content -Path $InitiativePolicyDefinitionsFilePath -Raw | Out-String   
             }
             else {
                 [string]$PolicyRuleFilePath = Get-VstsInput -Name PolicyRuleFilePath
                 Confirm-FileExists -FilePath $PolicyRuleFilePath -FileContext "Policy Rule"
     
                 $parameters.Mode = Get-VstsInput -Name Mode
-                $parameters.PolicyRule = Get-Content -Path $PolicyRuleFilePath | Out-String 
+                $parameters.PolicyRule = Get-Content -Path $PolicyRuleFilePath -Raw | Out-String 
             }
         }
 

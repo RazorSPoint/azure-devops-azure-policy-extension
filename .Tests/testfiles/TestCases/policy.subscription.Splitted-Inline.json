@@ -6,6 +6,14 @@
     "FileOrInline": "Inline",
     "GovernanceType": "PolicyDefinition",
     "DefinitionLocation": "Subscription",
-    "DeploymentType": "Full",
-    "JsonInline": "{ 'Some':'Json'}"
+    "DeploymentType": "Splitted",
+    "JsonInline": "{ 'Some':'Json'}",
+    "Category": "SomeCategory",
+    "Name": "Some-Name",
+    "DisplayName": "Some DisplayName",
+    "Mode": "all",
+    "Description": "Some Description",
+    "ParametersFilePath": ".Tests/testfiles/Policies/azurepolicy.parameters.json",
+    "PolicyRuleFilePath":  ".Tests/testfiles/Policies/azurepolicy.rules.json"
 }
+
