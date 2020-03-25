@@ -16,7 +16,7 @@ function Add-TemporaryJsonFile {
 
         $JsonObject = New-Object -TypeName "PSCustomObject"
         try {
-            $JsonFilePath = "$TempPath/$FileName"
+            $JsonFilePath = ("$TempPath/$FileName").Replace('/', '\')
 
             #if path not exists, create it!
             if (-not (Test-Path -Path $TempPath)) {
@@ -40,7 +40,7 @@ function Get-TemporaryFileName {
     param (
         [Parameter(Mandatory = $false)]
         [String]
-        [ValidateSet("xml","json")]
+        [ValidateSet("xml", "json")]
         $FileExtension = "json"
     )
     process {
@@ -135,7 +135,7 @@ function Get-GovernanceFullDeploymentParameters {
             $parameters.SubscriptionId = $SubscriptionId    
         }
         elseif ($PSCmdlet.ParameterSetName -eq "ManagementGroup") {    
-            $parameters.ManagementGroupId = $ManagementGroupName    
+            $parameters.ManagementGroupId = $ManagementGroupId    
         }  
 
         Write-Output $parameters

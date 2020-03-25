@@ -46,26 +46,31 @@ Describe 'Governance Utility Tests' {
 
         Mock Confirm-FileExists { }
 
-        It -Name "Get parameters for the GovernanceType='<GovernanceType>' on subscription scope with file path '<GovernanceFilePath>'"  -TestCases @(
-            @{GovernanceType = "PolicyDefinition"; GovernanceFilePath = "azurepolicy.json" }
-            @{GovernanceType = "PolicyInitiative"; GovernanceFilePath = "policyset.json" }
+        It -Name "Get parameters for the GovernanceType='<GovernanceType>' on <Scope> scope with file path '<GovernanceFilePath>'"  -TestCases @(
+            @{GovernanceType = "PolicyDefinition"; GovernanceFilePath = "azurepolicy.json"; Scope = "ManagementGroupId" }
+            @{GovernanceType = "PolicyInitiative"; GovernanceFilePath = "policyset.json"; Scope = "ManagementGroupId" }
+            @{GovernanceType = "PolicyDefinition"; GovernanceFilePath = "azurepolicy.json"; Scope = "SubscriptionId" }
+            @{GovernanceType = "PolicyInitiative"; GovernanceFilePath = "policyset.json"; Scope = "SubscriptionId" }
         ) {
-            param ($GovernanceType, $GovernanceFilePath)            
+            param ($GovernanceType, $GovernanceFilePath, $Scope)            
 
-            $subscriptionId = "450ea969-5877-4111-adde-73ef483c6a3a"
-            $parameters = Get-GovernanceFullDeploymentParameters `
-                -GovernanceType $GovernanceType `
-                -SubscriptionId $subscriptionId `
-                -GovernanceFilePath $GovernanceFilePath
+            $guid = "450ea969-5877-4111-adde-73ef483c6a3a"
 
-            $parameters["SubscriptionId"] | Should -Be $subscriptionId
+            $parameters = @{
+                GovernanceType     = $GovernanceType
+                GovernanceFilePath = $GovernanceFilePath
+                "$Scope"           = $guid
+            } 
 
+            $resultParameters = Get-GovernanceFullDeploymentParameters @parameters
+            $resultParameters[$Scope] | Should -Be $guid           
+            
             if ($GovernanceType -eq "PolicyDefinition") {
-                $parameters.ContainsKey("PolicyRule") | Should -Be $true
-                $parameters.ContainsKey("Mode") | Should -Be $true
+                $resultParameters.ContainsKey("PolicyRule") | Should -Be $true
+                $resultParameters.ContainsKey("Mode") | Should -Be $true
             }
             elseif ($GovernanceType -eq "PolicyInitiative") {
-                $parameters.ContainsKey("PolicyDefinition") | Should -Be $true
+                $resultParameters.ContainsKey("PolicyDefinition") | Should -Be $true
             }
         }
     }
@@ -107,9 +112,13 @@ Describe 'Governance Utility Tests' {
 
         It -Name "Get parameters for the from test case file '<TestDataFile>' should match returning parameters"  -TestCases @(
             @{TestDataFile = "policy.managementgroup.Full-File" }
+            @{TestDataFile = "policy.managementgroup.Full-Inline" }
+            @{TestDataFile = "policy.managementgroup.Splitted-File" }
+            @{TestDataFile = "policy.managementgroup.Splitted-Inline" }
             @{TestDataFile = "policy.subscription.Full-File" }
             @{TestDataFile = "policy.subscription.Full-Inline" }
-            @{TestDataFile = "policy.managementgroup.Full-Inline" }
+            @{TestDataFile = "policy.subscription.Splitted-File" }
+            @{TestDataFile = "policy.subscription.Splitted-Inline" }
             
         ) {
             param ($TestDataFile) 
@@ -202,27 +211,30 @@ Describe 'Governance Utility Tests' {
     Context "Add-TemporaryJsonFile" {
 
         Mock Write-VstsTaskError {
-            Write-Host $args
+            #Write-Host $args
             return ""
+        }
+
+        Mock New-Item { 
+            #Write-Host $args
+        }
+
+        Mock Out-File {
+            #Write-Host $args
+        }
+
+        Mock Test-Path {
+            # expect that the path must always be created
+            return $false
         }
 
         $json = '{"JsonProp":"JsonVal"}'
         $env:AGENT_RELEASEDIRECTORY = $PSScriptRoot
 
-        It -Name "File created has been created" {
-            $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "12bed85d-f556-479c-86a6-78239d6a8c96.json"
-            $filePath | Should -Exist
-
-            Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue   
-        }
-
-        It -Name "File with JSON should be like input JSON" { 
+        It -Name "File with json file path should be like expected path" { 
 
             $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "dd4e2c93-891d-4698-a7a6-9d497eceebad.json"
-            $fileContent = Get-Content -Path $filePath -Raw
-            $fileContent | Should -BeLike "*$json*"
-
-            Remove-Item -Path $filePath -Force -ErrorAction SilentlyContinue
+            $filePath | Should -Be "C:\_temp\dd4e2c93-891d-4698-a7a6-9d497eceebad.json"
         }
 
         It -Name "Wrong JSON should return error message" { 
@@ -299,6 +311,26 @@ Describe 'Governance Utility Tests' {
                 $null = Publish-SplittedPolicyDefinition @tmpPolicy -ErrorAction Stop
             } | Should -Not -Throw
 
+        }
+    }
+
+    Context -Name "Get-TemporaryFileName" {
+
+        It -Name "create random file name with <Extension> extension" -TestCases @(
+            @{Extension = "json" }
+            @{Extension = "xml" }
+        ) {
+            param (
+                $Extension
+            )
+
+            $tempFile = Get-TemporaryFileName -FileExtension $Extension
+            $tempFile | Should -BeLike "*.$Extension"
+        }
+
+        It -Name "create random file with not supported extension" {
+
+            { Get-TemporaryFileName -FileExtension "html" } | Should Throw  'The argument "html" does not belong to the set "xml,json" specified by the ValidateSet attribute'
         }
     }
 }
