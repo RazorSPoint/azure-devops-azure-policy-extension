@@ -244,10 +244,7 @@ Describe 'Governance Utility Tests' {
 
             $null = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "1755dc5e-3935-4783-9aaf-11d69435d1e4.json"
 
-            Assert-MockCalled Write-VstsTaskError -Exactly -Scope It -Times 1 -ParameterFilter {
-                $Message -like "Invalid object passed in*"
-            }
-           
+            Assert-MockCalled Write-VstsTaskError -Exactly -Scope It -Times 1           
         }
 
     }    
