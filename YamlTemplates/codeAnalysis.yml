@@ -22,4 +22,6 @@ steps:
       $r | ForEach-Object { 
              if($_.Severity -eq "Information") {$_.Severity = "Warning"}
              Write-Host "##vso[task.logissue type=$($_.Severity);sourcepath=$($_.ScriptPath);linenumber=$($_.Line);columnnumber=$($_.Column);]$($_.Message)" 
-           }
+      }
+      $nrErr = ($r | Where-Object { $_.Severity -eq "Error"}).Count
+      if($nrErr -gt 0) { Write-Host "##vso[task.complete result=Failed;]DONE" }
