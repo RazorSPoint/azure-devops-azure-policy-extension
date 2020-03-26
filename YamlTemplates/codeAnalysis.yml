@@ -1,0 +1,22 @@
+#source: Donavan Brown taken from the build pipeline for VSTeams
+
+parameters:
+  outputDir: './dist'
+
+steps:
+- task: PowerShell@2
+      displayName: 'Install PSScriptAnalyzer'
+      inputs:
+        targetType: 'inline'
+        script: 'Install-Module -Name PSScriptAnalyzer -Repository PSGallery -Force -Scope CurrentUser -Verbose'
+
+    - task: PowerShell@2
+      displayName: 'Run Static Code Analysis'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $r = Invoke-ScriptAnalyzer -Path "$(outputDir)/AzureInitiative/AzureInitiativeV1/ps_modules/CommonScripts" -Recurse
+          $r += Invoke-ScriptAnalyzer -Path "$(outputDir)/AzureInitiative/AzureInitiativeV1"
+          $r += Invoke-ScriptAnalyzer -Path "$(outputDir)/AzurePolicy/AzurePolicyV1"
+          $r += Invoke-ScriptAnalyzer -Path "$(outputDir)/AzurePolicy/AzurePolicyV2"
+          $r | ForEach-Object { Write-Host "##vso[task.logissue type=$($_.Severity);sourcepath=$($_.ScriptPath);linenumber=$($_.Line);columnnumber=$($_.Column);]$($_.Message)" }

@@ -1,7 +1,6 @@
 #source: Donavan Brown taken from the build pipeline for VSTeams
 
 parameters:
-  os: ''
   CodeCoverage: 'false'
 
 steps:
