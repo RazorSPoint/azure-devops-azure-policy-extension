@@ -19,4 +19,7 @@ steps:
       $r += Invoke-ScriptAnalyzer -Path "$(outputDir)/AzureInitiative/AzureInitiativeV1"
       $r += Invoke-ScriptAnalyzer -Path "$(outputDir)/AzurePolicy/AzurePolicyV1"
       $r += Invoke-ScriptAnalyzer -Path "$(outputDir)/AzurePolicy/AzurePolicyV2"
-      $r | ForEach-Object { Write-Host "##vso[task.logissue type=$($_.Severity);sourcepath=$($_.ScriptPath);linenumber=$($_.Line);columnnumber=$($_.Column);]$($_.Message)" }
+      $r | ForEach-Object { 
+             if($_.Severity -eq "Information") {$_.Severity = "Warning"}
+             Write-Host "##vso[task.logissue type=$($_.Severity);sourcepath=$($_.ScriptPath);linenumber=$($_.Line);columnnumber=$($_.Column);]$($_.Message)" 
+           }
