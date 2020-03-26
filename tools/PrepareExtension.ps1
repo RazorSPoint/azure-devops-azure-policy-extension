@@ -48,11 +48,11 @@ try {
 
         $subfolders | ForEach-Object {
 
-            $taskVersionFolder = "$($_.FullName)\ps_modules"
+            $taskVersionFolder = "$($_.FullName)"
 
             Write-Output "  - prossesing folder $taskVersionFolder"
             #remove any content from those folder, as they are temporary
-            Remove-Item -Path $taskVersionFolder -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "$taskVersionFolder\ps_modules" -Recurse -Force -ErrorAction SilentlyContinue
             #copy and overwrite all
             Copy-Item -Path "$sourcePath\ps_modules" -Destination $taskVersionFolder -Recurse -Force
 
