@@ -10,6 +10,10 @@ trigger:
 pool:
   vmImage: windows-latest
 
+variables:
+  outputDir: './dist'
+  sourcePath: '.src/'
+
 steps:
 - task: GitVersion@5
   displayName: GitVersion
@@ -20,7 +24,7 @@ steps:
   parameters:
     CodeCoverage: 'true'
 
-- pwsh: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1 -sourcePath "./src" -outputDir "./dist" -generateChangeLog'
+- pwsh: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1 -sourcePath $sourcePath -outputDir $outputDir -generateChangeLog'
   displayName: 'Merge Extension Files for Build'
 
 - pwsh: '$(Build.SourcesDirectory)/tools/SetTaskVersion.ps1 -Major $(GitVersion.Major) -Minor $(GitVersion.Minor) -Patch $(GitVersion.CommitsSinceVersionSource)'
@@ -33,7 +37,7 @@ steps:
 - task: PackageVSTSExtension@1
   displayName: 'Package Extension for every branch except master'
   inputs:
-    rootFolder: src
+    rootFolder: $outputDir
     outputPath: '$(Build.ArtifactStagingDirectory)/package/'
     extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.CommitsSinceVersionSource)'
 
@@ -42,7 +46,7 @@ steps:
 - task: PackageVSTSExtension@1
   displayName: 'Package Extension for refs/heads/master only'
   inputs:
-    rootFolder: src
+    rootFolder: $outputDir
     outputPath: '$(Build.ArtifactStagingDirectory)/package/'
     extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
 
