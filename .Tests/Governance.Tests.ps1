@@ -227,11 +227,12 @@ Describe 'Governance Utility Tests' {
             # expect that the path must always be created
             return $false
         }
-
-        $json = '{"JsonProp":"JsonVal"}'
+        
         $env:AGENT_RELEASEDIRECTORY = $PSScriptRoot
 
         It -Name "File with json file path should be like expected path" { 
+
+            $json = '{"JsonProp":"JsonVal"}'
 
             $filePath = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "dd4e2c93-891d-4698-a7a6-9d497eceebad.json"
             $filePath | Should -Be "C:\_temp\dd4e2c93-891d-4698-a7a6-9d497eceebad.json"
@@ -239,7 +240,7 @@ Describe 'Governance Utility Tests' {
 
         It -Name "Wrong JSON should return error message" { 
 
-            $json = '{JsonProp":"JsonVal"}'
+            $json = '{JsonProp""JsonVal"}'
 
             $null = Add-TemporaryJsonFile -JsonInline $json -TempPath "C:\_temp" -FileName "1755dc5e-3935-4783-9aaf-11d69435d1e4.json"
 

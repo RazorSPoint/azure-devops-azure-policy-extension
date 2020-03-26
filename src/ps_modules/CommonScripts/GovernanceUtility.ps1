@@ -27,7 +27,7 @@ function Add-TemporaryJsonFile {
 
             Write-Output $JsonFilePath
         }
-        catch [System.ArgumentException] {
+        catch{
             Write-VstsTaskError -Message "$($_.toString())"
         }
 
