@@ -16,6 +16,11 @@ param(
     [Parameter(ParameterSetName = "All")]
     [switch]$runTests,
 
+    # does all the preparation for the pre-build
+    [Parameter(ParameterSetName = "All")]
+    [Parameter(ParameterSetName = "UnitTest")]
+    [switch]$prepareExtension,
+
     # can be used to filter the unit test parts that should be run
     # see also: https://github.com/pester/Pester/wiki/Invoke%E2%80%90Pester#testname-alias-name
     [Parameter(ParameterSetName = "UnitTest")]
@@ -24,6 +29,7 @@ param(
     # outputs the code coverage
     [Parameter(ParameterSetName = "UnitTest")]
     [switch]$codeCoverage
+
 )
 
 $sourcePath = "./src"
@@ -37,12 +43,14 @@ else {
  
 $output = [System.IO.Path]::GetFullPath($output)
 
-. ./tools/PrepareExtension.ps1 -sourcePath $sourcePath -outputDir $outputDir
-
-Write-Output "Publish complete to $outputDir"
+if ($prepareExtension) {
+    . ./tools/PrepareExtension.ps1 -sourcePath $sourcePath -outputDir $outputDir -generateChangeLog
+    Write-Output "Publish complete to $outputDir"
+}
 
 # run the unit tests with Pester
 if ($runTests.IsPresent) {
+    Write-Output "Starting unit tests..."
     if ($null -eq $(Get-Module -Name Pester)) {
         Install-Module -Name Pester -Repository PSGallery -Force -Scope CurrentUser -AllowClobber -SkipPublisherCheck
     }
@@ -64,14 +72,11 @@ if ($runTests.IsPresent) {
         $pesterArgs.PassThru = $true
     }
  
-    if ($testName) {
- 
-        $pesterArgs.TestName = $testName
- 
+    if ($testName) { 
+        $pesterArgs.TestName = $testName 
         #passthru must be activated according to Pester docs
         $pesterArgs.PassThru = $true
-    }
- 
+    } 
     Invoke-Pester @pesterArgs 
 }
  
@@ -80,6 +85,7 @@ if ($runTests.IsPresent) {
 # run PSScriptAnalyzer
 if ($analyzeScript.IsPresent) {
     Write-Output "Starting static code analysis..."
+    Write-Output "-----------"
     if ($null -eq $(Get-Module -Name PSScriptAnalyzer)) {
         Install-Module -Name PSScriptAnalyzer -Repository PSGallery -Force -Scope CurrentUser
     }
@@ -89,5 +95,7 @@ if ($analyzeScript.IsPresent) {
     $r += Invoke-ScriptAnalyzer -Path "$output/AzurePolicy/AzurePolicyV1"
     $r += Invoke-ScriptAnalyzer -Path "$output/AzurePolicy/AzurePolicyV2"
     $r | ForEach-Object { Write-Host "##vso[task.logissue type=$($_.Severity);sourcepath=$($_.ScriptPath);linenumber=$($_.Line);columnnumber=$($_.Column);]$($_.Message)" }
+    
+    Write-Output "-----------"
     Write-Output "Static code analysis complete."
 }
