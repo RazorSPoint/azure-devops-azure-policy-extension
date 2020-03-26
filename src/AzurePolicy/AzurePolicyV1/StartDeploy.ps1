@@ -145,8 +145,8 @@ try {
     }
     catch
     {
-       $error = $_.Exception.Message
-       Write-Verbose "Unable to get the authScheme $error" 
+       $errorMsg = $_.Exception.Message
+       Write-Verbose "Unable to get the authScheme $errorMsg" 
     }
 
     ## Real things are happening here
