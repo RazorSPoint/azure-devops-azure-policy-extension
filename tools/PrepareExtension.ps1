@@ -1,17 +1,20 @@
 [CmdletBinding()]
 param(
-	[string]$sourcePath,
-    [string]$outputDir    
+    [string]$sourcePath,
+    [string]$outputDir,
+    [switch]$generateChangeLog
 )
 
-if(Test-Path $outputDir){
-   $null = Remove-Item -Path $outputDir -Recurse -Force 
+if (Test-Path $outputDir) {
+    $null = Remove-Item -Path $outputDir -Recurse -Force 
 }
 
-. ./tools/GenerateChangelog.ps1 `
-    -outputFilePath "$outputDir/overview.md" `
-    -readmeFilePath "./README.md" `
-    -changelogFilePath "./docs/CHANGELOG.md"
+if ($generateChangeLog) {
+    . ./tools/GenerateChangelog.ps1 `
+        -outputFilePath "$outputDir/overview.md" `
+        -readmeFilePath "./README.md" `
+        -changelogFilePath "./docs/CHANGELOG.md"
+}
 
 # copy files to dist folder without modules
 $excludes = @("ps_modules")

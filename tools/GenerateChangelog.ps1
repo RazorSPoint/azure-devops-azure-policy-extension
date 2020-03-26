@@ -13,7 +13,7 @@ $content = $content.Replace("../src/", "").Replace("src/", "")
 $distPath = Split-Path -Path $outputFilePath
 If(!(test-path $distPath))
 {
-      New-Item -ItemType Directory -Force -Path $distPath
+    $null = New-Item -ItemType Directory -Force -Path $distPath
 }
 
 $content | Set-Content $outputFilePath
