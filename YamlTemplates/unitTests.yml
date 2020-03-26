@@ -39,6 +39,7 @@ steps:
     displayName: 'Publish code coverage'
     inputs:
       summaryFileLocation: '**\coverage.xml'
+      pathToSources: '.\src\ps_modules\CommonScripts\'
       failIfCoverageEmpty: true
 
 - task: PublishTestResults@2
