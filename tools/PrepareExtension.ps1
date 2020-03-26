@@ -14,14 +14,14 @@ try {
     }
 
     if ($generateChangeLog) {
-        Write-Output "Generating extension readme with changelogs"
+        Write-Output "generating extension readme with changelogs"
         . ./tools/GenerateChangelog.ps1 `
             -outputFilePath "$outputDir/overview.md" `
             -readmeFilePath "./README.md" `
             -changelogFilePath "./docs/CHANGELOG.md"
     }
 
-    Write-Output "Merge files to $outputDir to $sourcePath"
+    Write-Output "merge files to $outputDir from $sourcePath"
 
     # copy files to dist folder without modules
     $excludes = @("ps_modules")
@@ -30,6 +30,7 @@ try {
     Copy-Item -Destination $outputDir -Recurse -Force
     Copy-Item -Path "$sourcePath\vss-extension.json" -Destination $outputDir -Recurse -Force
 
+    Write-Output "loading extension file from $outputDir\vss-extension.json"
     $extensionFileJson = Get-Content -Path "$outputDir\vss-extension.json" | Out-String | ConvertFrom-Json
 
     #copy only to used extension paths
@@ -39,6 +40,8 @@ try {
 
         $taskIdName = $_
 
+        Write-Output "prossesing task $taskIdName"
+
         $taskFolder = "$outputDir\$taskIdName"
 
         $subfolders = Get-ChildItem -Path $taskFolder -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
@@ -46,7 +49,8 @@ try {
         $subfolders | ForEach-Object {
 
             $taskVersionFolder = "$($_.FullName)\ps_modules"
-    
+
+            Write-Output "  - prossesing folder $taskVersionFolder"
             #remove any content from those folder, as they are temporary
             Remove-Item -Path $taskVersionFolder -Recurse -Force -ErrorAction SilentlyContinue
             #copy and overwrite all
