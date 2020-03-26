@@ -12,7 +12,7 @@ pool:
 
 variables:
   outputDir: './dist'
-  sourcePath: '.src/'
+  sourcePath: './src/'
 
 steps:
 - task: GitVersion@5
