@@ -57,7 +57,15 @@ try {
             Copy-Item -Path "$sourcePath\ps_modules" -Destination $taskVersionFolder -Recurse -Force
 
             #save module into the extension folders
+            $module = Find-Module -Name VstsTaskSdk -Repository PSGallery
             Save-Module -Name VstsTaskSdk -Repository PSGallery -Force -Path "$taskVersionFolder\ps_modules" -AcceptLicense
+
+            $source= "$taskVersionFolder\ps_modules\$($module.Name)\$($module.Version)"
+            $destination = "$taskVersionFolder\ps_modules\VstsTaskSdk"
+            Get-ChildItem -Path $source -Hidden -File | Move-Item -Destination $destination -Force
+            Get-ChildItem -Path $source -File | Move-Item -Destination $destination -Force
+            Get-ChildItem -Path $source -Recurse -Directory | Move-Item -Destination $destination -Force
+            Remove-Item $source -Force -Recurse
         }
     }
 }
