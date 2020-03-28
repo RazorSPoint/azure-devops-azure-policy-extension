@@ -26,7 +26,7 @@ finally {
         Remove-Item -LiteralPath "$agentTmpPath/$tempFileName" -ErrorAction 'SilentlyContinue'
     }
 
-    Import-Module $PSScriptRoot\..\VstsAzureHelpers_
+    Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
     Remove-EndpointSecrets
     Disconnect-AzureAndClearContext -ErrorAction SilentlyContinue
 }

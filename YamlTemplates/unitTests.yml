@@ -19,7 +19,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        Invoke-Pester -Script .\.Tests -EnableExit -Strict -OutputFile test-results.xml -OutputFormat NUnitXml -passThru
+        Invoke-Pester -Script .\.Tests\unit -EnableExit -Strict -OutputFile test-results.xml -OutputFormat NUnitXml -passThru
       workingDirectory: '$(System.DefaultWorkingDirectory)'
       pwsh: true
 
@@ -29,7 +29,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        Invoke-Pester -Script .\.Tests -CodeCoverage .\src\ps_modules\CommonScripts\*.ps*1 -CodeCoverageOutputFile coverage.xml -CodeCoverageOutputFileFormat JaCoCo -EnableExit -Strict -OutputFile test-results.xml -OutputFormat NUnitXml
+        Invoke-Pester -Script .\.Tests\unit -CodeCoverage .\src\ps_modules\CommonScripts\*.ps*1 -CodeCoverageOutputFile coverage.xml -CodeCoverageOutputFileFormat JaCoCo -EnableExit -Strict -OutputFile test-results.xml -OutputFormat NUnitXml
       workingDirectory: '$(System.DefaultWorkingDirectory)'
       pwsh: true
 

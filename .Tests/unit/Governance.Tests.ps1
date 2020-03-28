@@ -10,12 +10,12 @@ if ($null -eq $(Get-Module -Name VstsTaskSdk)) {
 
 Import-Module "$currentPath\ps_modules\VstsTaskSdk" -ErrorAction SilentlyContinue
 
-. $currentPath\..\src\ps_modules\CommonScripts\GovernanceUtility.ps1
+. $currentPath\..\..\src\ps_modules\CommonScripts\GovernanceUtility.ps1
 
 Describe 'Governance Utility Tests' {
 
-    $fullPolicySample = Get-Content -Path "$currentPath/testfiles/Policies/azurepolicy.json"  -Raw
-    $fullInitiativeSample = Get-Content -Path "$currentPath/testfiles/Policies/policyset.json"  -Raw
+    $fullPolicySample = Get-Content -Path "$currentPath/../testfiles/Policies/azurepolicy.json"  -Raw
+    $fullInitiativeSample = Get-Content -Path "$currentPath/../testfiles/Policies/policyset.json"  -Raw
 
     Mock Write-VstsTaskError {
         return $Message
@@ -77,7 +77,7 @@ Describe 'Governance Utility Tests' {
 
     Context "Get-GovernanceDeploymentParameters" {
 
-        $policy = (Get-Content -Path "$currentPath\testfiles\Policies\azurepolicy.json" -Raw | ConvertFrom-Json)
+        $policy = (Get-Content -Path "$currentPath\..\testfiles\Policies\azurepolicy.json" -Raw | ConvertFrom-Json)
 
         Mock Confirm-FileExists { }
 
@@ -103,8 +103,8 @@ Describe 'Governance Utility Tests' {
             @{TestDataFile = "policy.managementgroup.Full-Inline.json" }
         ) {
             param ($TestDataFile) 
-            _setGovernanceEnvironment -Path "$currentPath\testfiles\TestCases\$TestDataFile"
-            $governanceType = (Get-Content -Path "$currentPath\testfiles\TestCases\$TestDataFile" -Raw | ConvertFrom-Json)."GovernanceType"
+            _setGovernanceEnvironment -Path "$currentPath\..\testfiles\TestCases\$TestDataFile"
+            $governanceType = (Get-Content -Path "$currentPath\..\testfiles\TestCases\$TestDataFile" -Raw | ConvertFrom-Json)."GovernanceType"
             {                 
                 Get-GovernanceDeploymentParameters -GovernanceType $governanceType -TempPath "C:\_temp" -TempFileName "12bed85d-f556-479c-86a6-78239d6a8c96.json"
             } | Should -Not -Throw
@@ -122,10 +122,10 @@ Describe 'Governance Utility Tests' {
             
         ) {
             param ($TestDataFile) 
-            _setGovernanceEnvironment -Path "$currentPath\testfiles\TestCases\$TestDataFile.json"
+            _setGovernanceEnvironment -Path "$currentPath\..\testfiles\TestCases\$TestDataFile.json"
             
-            $governanceType = (Get-Content -Path "$currentPath\testfiles\TestCases\$TestDataFile.json" -Raw | ConvertFrom-Json)."GovernanceType"            
-            $expectedParameters = (Get-Content -Path "$currentPath\testfiles\ReturnData\$TestDataFile.return.json" -Raw | ConvertFrom-Json)
+            $governanceType = (Get-Content -Path "$currentPath\..\testfiles\TestCases\$TestDataFile.json" -Raw | ConvertFrom-Json)."GovernanceType"            
+            $expectedParameters = (Get-Content -Path "$currentPath\..\testfiles\ReturnData\$TestDataFile.return.json" -Raw | ConvertFrom-Json)
 
             $ouputParameters = Get-GovernanceDeploymentParameters -GovernanceType $governanceType -TempPath "C:\_temp" -TempFileName "12bed85d-f556-479c-86a6-78239d6a8c96.json"
 
@@ -252,9 +252,9 @@ Describe 'Governance Utility Tests' {
     Context -Name "DeploySplittedPolicyDefinition.ps1" {
 
 
-        $policyParameters = Get-Content -Path "$currentPath/testfiles/Policies/azurepolicy.parameters.json" | ConvertFrom-Json
-        $policyRule = Get-Content -Path "$currentPath/testfiles/Policies/azurepolicy.json" | ConvertFrom-Json
-        $policyFromPortal = Get-Content -Path "$currentPath/testfiles/Policies/azurepolicy.fromPortal.json" | ConvertFrom-Json
+        $policyParameters = Get-Content -Path "$currentPath/../testfiles/Policies/azurepolicy.parameters.json" | ConvertFrom-Json
+        $policyRule = Get-Content -Path "$currentPath/../testfiles/Policies/azurepolicy.json" | ConvertFrom-Json
+        $policyFromPortal = Get-Content -Path "$currentPath/../testfiles/Policies/azurepolicy.fromPortal.json" | ConvertFrom-Json
     
         $policy = @{
             Name        = "DenyCostCenterFromRg"       

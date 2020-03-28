@@ -17,5 +17,5 @@ CleanUp-PSModulePathForHostedAgent
 Update-PSModulePathForHostedAgent -targetAzurePs $targetAzurePs
 
 $endpointObject =  ConvertFrom-Json  $endpoint
-Import-Module "$PSScriptRoot\..\VstsAzureHelpers_"
+Import-Module $PSScriptRoot\..\VstsAzureHelpers_
 Initialize-AzModule -Endpoint $endpointObject -azVersion $targetAzurePs

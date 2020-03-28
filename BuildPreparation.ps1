@@ -56,7 +56,7 @@ if ($runTests.IsPresent) {
     }
  
     $pesterArgs = @{
-        Script       = '.\.Tests'  
+        Script       = '.\.Tests\unit'  
         OutputFile   = 'test-results.xml'
         OutputFormat = 'NUnitXml'
         Show         = 'Fails'
