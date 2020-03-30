@@ -179,7 +179,7 @@
             "defaultValue": "",
             "required": true,
             "helpMarkDown": "The policy rule consists of If and Then blocks. In the If block, you define one or more conditions that specify when the policy is enforced.<br/><br/>[More Information](https://docs.microsoft.com/azure/governance/policy/concepts/definition-structure#policy-rule)",
-            "visibleRule": "DeploymentType = Splitted && GovernanceType = PolicyDefinition"
+            "visibleRule": "DeploymentType = Splitted"
         }    
     ],
     "execution": {
