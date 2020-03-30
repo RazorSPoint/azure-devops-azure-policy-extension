@@ -1,6 +1,6 @@
 {
     "id": "ef6e39d1-dbac-47e0-8c6b-f5735aaa4096",
-    "name": "DeployAzurePolicy",
+    "name": "DeployAzureGovernance",
     "friendlyName": "Deploy Azure Policies",
     "description": "Deploys Azure policies.",
     "author": "Sebastian Schütze",
