@@ -12,8 +12,8 @@
     "demands": ["PowerShell","AzurePS"],
     "version": {
         "Major": "0",
-        "Minor": "5",
-        "Patch": "3"
+        "Minor": "6",
+        "Patch": "0"
     },
     "preview": true,
     "minimumAgentVersion": "2.115.0",

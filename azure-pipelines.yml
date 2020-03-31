@@ -7,63 +7,48 @@ trigger:
   branches:
     include: [ develop ]
 
-queue:
-  name: Hosted VS2017
-  demands: npm
+pool:
+  vmImage: windows-latest
+
+variables:
+  outputDir: './dist'
+  sourcePath: './src'
 
 steps:
-- task: gittools.gitversion.gitversion-task.GitVersion@4
+- task: GitVersion@5
   displayName: GitVersion
   inputs:
-    preferBundledVersion: false
+    runtime: 'core'
 
+- template: YamlTemplates/unitTests.yml
+  parameters:
+    CodeCoverage: 'true'
 
-- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
-  displayName: 'Pester Test Runner'
+- pwsh: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1 -sourcePath $(sourcePath) -outputDir $(outputDir) -generateChangeLog'
+  displayName: 'Merge Extension Files for Build'
+
+- template: YamlTemplates/codeAnalysis.yml
+
+- pwsh: '$(Build.SourcesDirectory)/tools/SetTaskVersion.ps1 -Major $(GitVersion.Major) -Minor $(GitVersion.Minor) -Patch $(GitVersion.CommitsSinceVersionSource)'
+  displayName: 'Set Tasks Version'
+
+- task: TfxInstaller@2
   inputs:
-    scriptFolder: "@{Path=''$(Build.SourcesDirectory)'; Parameters=@{AgentToolPath ='$(Agent.WorkFolder)'}}"
-    resultsFile: '$(Build.SourcesDirectory)\Test-Pester.XML'
-    run32Bit: false
+    version: 'v0.7.x'
 
-  enabled: false
-
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results **\Test-*.xml'
-  inputs:
-    testResultsFormat: NUnit
-    testResultsFiles: '**\Test-*.xml'
-    searchFolder: '$(Build.SourcesDirectory)'
-
-  enabled: false
-  condition: succeededOrFailed()
-
-- powershell: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1'
-  displayName: 'Copy Common PowerShell Modules Into Tasks'
-
-- powershell: '$(Build.SourcesDirectory)/tools/GenerateChangelog.ps1'
-  displayName: 'Generate Extension Readme.md'
-
-- task: geeklearningio.gl-vsts-tasks-file-patch.json-patch-task.JsonPatch@3
-  displayName: 'Patch Azure Policy task.json'
-  inputs:
-    JsonWorkingDir: '$(Build.SourcesDirectory)/src/AzurePolicy/AzurePolicyV1'
-    JsonTargetFilters: task.json
-    JsonPatchContent: '= /version/Patch => "$(GitVersion.CommitsSinceVersionSource)"'
-    OutputPatchFile: true
-
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+- task: PackageVSTSExtension@1
   displayName: 'Package Extension for every branch except master'
   inputs:
-    rootFolder: src
+    rootFolder: $(outputDir)
     outputPath: '$(Build.ArtifactStagingDirectory)/package/'
     extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.CommitsSinceVersionSource)'
 
   condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
 
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
+- task: PackageVSTSExtension@1
   displayName: 'Package Extension for refs/heads/master only'
   inputs:
-    rootFolder: src
+    rootFolder: $(outputDir)
     outputPath: '$(Build.ArtifactStagingDirectory)/package/'
     extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
 

@@ -1,0 +1,155 @@
+[{
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+    "parameters": {
+      "tagName": {
+        "value": "environment"
+      },
+      "tagValue": {
+        "value": "[parameters('EnvironmentTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+    "parameters": {
+      "tagName": {
+        "value": "solution"
+      },
+      "tagValue": {
+        "value": "[parameters('SolutionTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+    "parameters": {
+      "tagName": {
+        "value": "KG"
+      },
+      "tagValue": {
+        "value": "[parameters('KgTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+    "parameters": {
+      "tagName": {
+        "value": "department"
+      },
+      "tagValue": {
+        "value": "[parameters('DepartmentTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+    "parameters": {
+      "tagName": {
+        "value": "owner"
+      },
+      "tagValue": {
+        "value": "[parameters('OwnerTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+    "parameters": {
+      "tagName": {
+        "value": "cost center"
+      },
+      "tagValue": {
+        "value": "[parameters('CostCenterTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+    "parameters": {
+      "tagName": {
+        "value": "requester"
+      },
+      "tagValue": {
+        "value": "[parameters('RequesterTagValue')]"
+      }
+    }
+  },      
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+    "parameters": {
+      "tagName": {
+        "value": "environment"
+      },
+      "tagValue": {
+        "value": "[parameters('EnvironmentTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+    "parameters": {
+      "tagName": {
+        "value": "solution"
+      },
+      "tagValue": {
+        "value": "[parameters('SolutionTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+    "parameters": {
+      "tagName": {
+        "value": "KG"
+      },
+      "tagValue": {
+        "value": "[parameters('KgTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+    "parameters": {
+      "tagName": {
+        "value": "department"
+      },
+      "tagValue": {
+        "value": "[parameters('DepartmentTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+    "parameters": {
+      "tagName": {
+        "value": "owner"
+      },
+      "tagValue": {
+        "value": "[parameters('OwnerTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+    "parameters": {
+      "tagName": {
+        "value": "cost center"
+      },
+      "tagValue": {
+        "value": "[parameters('CostCenterTagValue')]"
+      }
+    }
+  },
+  {
+    "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+    "parameters": {
+      "tagName": {
+        "value": "requester"
+      },
+      "tagValue": {
+        "value": "[parameters('RequesterTagValue')]"
+      }
+    }
+  }
+]

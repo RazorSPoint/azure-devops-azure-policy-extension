@@ -1,0 +1,237 @@
+{
+    "name": "EnforceSHHTags",
+    "properties": {
+      "displayName": "Enforce Tags for SHH",
+      "policyType": "Custom",
+      "description": "Enforces the following tags: CC (cost center), solution, environment, department, owner, requester",
+      "metadata": {
+        "category": "SHH Tagging"
+      },
+      "parameters": {
+        "EnvironmentTagValue": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Environment Tag Value",
+            "description": "The environment type that should be enforced"
+          }, 
+          "allowedValues": [
+            "development",
+            "production",
+            "test"
+          ]
+        },
+        "SolutionTagValue": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Solution Tag Value",
+            "description": "The solution name that should be enforced"
+          }
+        },
+        "DepartmentTagValue": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Department Tag Value",
+            "description": "The solution name that should be enforced"
+          },
+          "allowedValues": [
+            "DWP",
+            "MAN",
+            "BAH"
+          ]
+        },
+        "KgTagValue": {
+          "type": "String",
+          "metadata": {
+            "displayName": "KG Tag Value",
+            "description": "The KG short name that should be enforced"
+          },
+          "allowedValues": [
+            "DEU",
+            "ESP",
+            "DIB"
+          ]
+        },
+        "OwnerTagValue": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Owner Email Tag Value",
+            "description": "The owner email that should be enforced"
+          }
+        },
+        "CostCenterTagValue": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Cost Center Tag Value",
+            "description": "The owner email that should be enforced"
+          },
+          "allowedValues": [
+            "120032000",
+            "120036000",
+            "387024500"
+          ]
+        },
+        "RequesterTagValue": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Requester Email Tag Value",
+            "description": "The requester email that should be enforced"
+          }
+        }
+      },
+      "policyDefinitions": [{
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+          "parameters": {
+            "tagName": {
+              "value": "environment"
+            },
+            "tagValue": {
+              "value": "[parameters('EnvironmentTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+          "parameters": {
+            "tagName": {
+              "value": "solution"
+            },
+            "tagValue": {
+              "value": "[parameters('SolutionTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+          "parameters": {
+            "tagName": {
+              "value": "KG"
+            },
+            "tagValue": {
+              "value": "[parameters('KgTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+          "parameters": {
+            "tagName": {
+              "value": "department"
+            },
+            "tagValue": {
+              "value": "[parameters('DepartmentTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+          "parameters": {
+            "tagName": {
+              "value": "owner"
+            },
+            "tagValue": {
+              "value": "[parameters('OwnerTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+          "parameters": {
+            "tagName": {
+              "value": "cost center"
+            },
+            "tagValue": {
+              "value": "[parameters('CostCenterTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498",
+          "parameters": {
+            "tagName": {
+              "value": "requester"
+            },
+            "tagValue": {
+              "value": "[parameters('RequesterTagValue')]"
+            }
+          }
+        },      
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+          "parameters": {
+            "tagName": {
+              "value": "environment"
+            },
+            "tagValue": {
+              "value": "[parameters('EnvironmentTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+          "parameters": {
+            "tagName": {
+              "value": "solution"
+            },
+            "tagValue": {
+              "value": "[parameters('SolutionTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+          "parameters": {
+            "tagName": {
+              "value": "KG"
+            },
+            "tagValue": {
+              "value": "[parameters('KgTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+          "parameters": {
+            "tagName": {
+              "value": "department"
+            },
+            "tagValue": {
+              "value": "[parameters('DepartmentTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+          "parameters": {
+            "tagName": {
+              "value": "owner"
+            },
+            "tagValue": {
+              "value": "[parameters('OwnerTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+          "parameters": {
+            "tagName": {
+              "value": "cost center"
+            },
+            "tagValue": {
+              "value": "[parameters('CostCenterTagValue')]"
+            }
+          }
+        },
+        {
+          "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/49c88fc8-6fd1-46fd-a676-f12d1d3a4c71",
+          "parameters": {
+            "tagName": {
+              "value": "requester"
+            },
+            "tagValue": {
+              "value": "[parameters('RequesterTagValue')]"
+            }
+          }
+        }
+      ]
+    }
+  }
