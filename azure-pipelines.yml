@@ -5,7 +5,7 @@ resources:
 trigger:
   batch: true
   branches:
-    include: [ develop ]
+    include: [ develop, master ]
 
 pool:
   vmImage: windows-latest
