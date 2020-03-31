@@ -17,7 +17,7 @@ try {
         Write-Output "generating extension readme with changelogs"
         . ./tools/GenerateChangelog.ps1 `
             -outputFilePath "$outputDir/overview.md" `
-            -readmeFilePath "./README.md" `
+            -readmeFilePath "./docs/introduction.md" `
             -changelogFilePath "./docs/CHANGELOG.md"
     }
 
