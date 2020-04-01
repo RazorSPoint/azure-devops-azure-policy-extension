@@ -76,7 +76,7 @@ stages:
   - deployment: Test_Release
     displayName: 'Test Release'
     dependsOn: Build
-    environment: Staging.AzDMarketplace
+    environment: Staging
     strategy:
       runOnce:
         deploy:        
@@ -107,7 +107,7 @@ stages:
   - deployment: Public_Release
     displayName: 'Public Release'
     dependsOn: Staging
-    environment: Production.AzDMarketplace
+    environment: Production
     strategy:
       runOnce:
         deploy:        
