@@ -13,50 +13,117 @@ pool:
 variables:
   outputDir: './dist'
   sourcePath: './src'
+  PublisherName: 'RazorSPoint'
+  ExtensionId: '6524a597-31bc-44fc-895d-0e9ba50f2493'
+  SharedWith: 'razorspoint-trashdummy,razorspoint'
 
-steps:
-- task: GitVersion@5
-  displayName: GitVersion
-  inputs:
-    runtime: 'core'
 
-- template: YamlTemplates/unitTests.yml
-  parameters:
-    CodeCoverage: 'true'
+stages:
+- stage: Build
+  jobs:
+  - job: Build_Extension
+    displayName: 'Build Extension'
+    steps:
+    - task: GitVersion@5
+      displayName: GitVersion
+      inputs:
+        runtime: 'core'
 
-- pwsh: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1 -sourcePath $(sourcePath) -outputDir $(outputDir) -generateChangeLog'
-  displayName: 'Merge Extension Files for Build'
+    - template: YamlTemplates/unitTests.yml
+      parameters:
+        CodeCoverage: 'true'
 
-- template: YamlTemplates/codeAnalysis.yml
+    - pwsh: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1 -sourcePath $(sourcePath) -outputDir $(outputDir) -generateChangeLog'
+      displayName: 'Merge Extension Files for Build'
 
-- pwsh: '$(Build.SourcesDirectory)/tools/SetTaskVersion.ps1 -Major $(GitVersion.Major) -Minor $(GitVersion.Minor) -Patch $(GitVersion.CommitsSinceVersionSource)'
-  displayName: 'Set Tasks Version'
+    - template: YamlTemplates/codeAnalysis.yml
 
-- task: TfxInstaller@2
-  inputs:
-    version: 'v0.7.x'
+    - pwsh: '$(Build.SourcesDirectory)/tools/SetTaskVersion.ps1 -Major $(GitVersion.Major) -Minor $(GitVersion.Minor) -Patch $(GitVersion.CommitsSinceVersionSource)'
+      displayName: 'Set Tasks Version'
 
-- task: PackageVSTSExtension@1
-  displayName: 'Package Extension for every branch except master'
-  inputs:
-    rootFolder: $(outputDir)
-    outputPath: '$(Build.ArtifactStagingDirectory)/package/'
-    extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.CommitsSinceVersionSource)'
+    - task: TfxInstaller@2
+      inputs:
+        version: 'v0.7.x'
 
-  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+    - task: PackageVSTSExtension@1
+      displayName: 'Package Extension for every branch except master'
+      inputs:
+        rootFolder: $(outputDir)
+        outputPath: '$(Build.ArtifactStagingDirectory)/package/'
+        extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.CommitsSinceVersionSource)'
 
-- task: PackageVSTSExtension@1
-  displayName: 'Package Extension for refs/heads/master only'
-  inputs:
-    rootFolder: $(outputDir)
-    outputPath: '$(Build.ArtifactStagingDirectory)/package/'
-    extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
+      condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    - task: PackageVSTSExtension@1
+      displayName: 'Package Extension for refs/heads/master only'
+      inputs:
+        rootFolder: $(outputDir)
+        outputPath: '$(Build.ArtifactStagingDirectory)/package/'
+        extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: AzurepolicyTasks'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/package/'
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
-    ArtifactName: AzurepolicyTasks
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: AzurepolicyTasks'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/package/'
+
+        ArtifactName: AzurepolicyTasks
+
+
+- stage: Staging
+  jobs:
+  - deployment: Test_Release
+    displayName: 'Test Release'
+    dependsOn: Build
+    environment: Staging.AzDMarketplace
+    strategy:
+      runOnce:
+        deploy:        
+          steps:
+
+          - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@2
+            displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.7.x'
+            inputs:
+              version: v0.7.x
+
+          - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishAzureDevOpsExtension@2
+            displayName: 'Publish Extension'
+            inputs:
+              connectedServiceName: 'Marketplace Connection'
+              fileType: vsix
+              vsixFile: '$(System.DefaultWorkingDirectory)/AzurePolicies/AzurepolicyTasks/*.vsix'
+              publisherId: '$(PublisherName)'
+              extensionId: '$(ExtensionId)'
+              extensionTag: Preview
+              updateTasksVersion: false
+              updateTasksId: true
+              extensionVisibility: privatepreview
+              extensionPricing: free
+              shareWith: '$(SharedWith)'
+
+- stage: Production
+  jobs:
+  - deployment: Public_Release
+    displayName: 'Public Release'
+    dependsOn: Staging
+    environment: Production.AzDMarketplace
+    strategy:
+      runOnce:
+        deploy:        
+          steps:
+
+          - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@2
+            displayName: 'Use Node CLI for Azure DevOps (tfx-cli): v0.7.x'
+            inputs:
+              version: v0.7.x
+
+          - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishAzureDevOpsExtension@2
+            displayName: 'Publish Extension '
+            inputs:
+              connectedServiceName: 'Marketplace Connection'
+              fileType: vsix
+              vsixFile: '$(System.DefaultWorkingDirectory)/AzurePolicies/AzurepolicyTasks/*.vsix'
+              publisherId: '$(PublisherName)'
+              updateTasksVersion: false
+
