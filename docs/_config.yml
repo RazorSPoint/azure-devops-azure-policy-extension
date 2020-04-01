@@ -1,2 +1,16 @@
 theme: jekyll-theme-cayman
 title: Welcome to the Azure DevOps Policy Pipeline Extension Docs
+
+locale: en_US
+#logo:
+
+# Enter the following platform usernames if you would like for them to appear on your site.
+owner:
+  name: Sebastian Schütze
+  #avatar: bio-photo.jpg
+  #bio: "This is a sample Jekyll academic website."
+  #email: laderast@ohsu.edu
+  # Do not include the @ symbol in your Twitter username
+  twitter: RezorSPoint
+  linkedin: sebastianschuetze
+  github: SebastianSchuetze
