@@ -75,7 +75,6 @@ stages:
   jobs:
   - deployment: Test_Release
     displayName: 'Test Release'
-    dependsOn: Build
     environment: Staging
     strategy:
       runOnce:
@@ -106,7 +105,6 @@ stages:
   jobs:
   - deployment: Public_Release
     displayName: 'Public Release'
-    dependsOn: Staging
     environment: Production
     strategy:
       runOnce:
