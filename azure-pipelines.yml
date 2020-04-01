@@ -77,6 +77,7 @@ stages:
       runOnce:
         deploy:        
           steps:
+          - checkout: self 
 
           - task: GitVersion@5
             displayName: GitVersion
@@ -112,7 +113,7 @@ stages:
       runOnce:
         deploy:        
           steps:
-
+          - checkout: self 
           - task: GitVersion@5
             displayName: GitVersion
             inputs:
