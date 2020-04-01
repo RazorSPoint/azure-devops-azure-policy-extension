@@ -91,7 +91,7 @@ stages:
             inputs:
               connectedServiceName: 'Marketplace Connection'
               fileType: vsix
-              vsixFile: 'AzurepolicyTasks/*.vsix'
+              vsixFile: '$(Build.StagingDirectory)/AzurepolicyTasks/*.vsix'
               publisherId: '$(PublisherName)'
               extensionId: '$(ExtensionId)'
               extensionTag: Preview
@@ -121,7 +121,7 @@ stages:
             inputs:
               connectedServiceName: 'Marketplace Connection'
               fileType: vsix
-              vsixFile: '$(System.DefaultWorkingDirectory)/AzurePolicies/AzurepolicyTasks/*.vsix'
+              vsixFile: '$(Build.StagingDirectory)/AzurePolicies/AzurepolicyTasks/*.vsix'
               publisherId: '$(PublisherName)'
               updateTasksVersion: false
 
