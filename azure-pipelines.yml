@@ -7,7 +7,7 @@ trigger:
   branches:
     include: [ master ]
 
-PR:
+pr:
   autoCancel: true
   branches:
     include:
