@@ -49,9 +49,6 @@ stages:
 
     - template: YamlTemplates/codeAnalysis.yml
 
-    - pwsh: '$(Build.SourcesDirectory)/tools/SetTaskVersion.ps1 -Major $(GitVersion.Major) -Minor $(GitVersion.Minor) -Patch $(GitVersion.CommitsSinceVersionSource)'
-      displayName: 'Set Tasks Version'
-
     - task: TfxInstaller@2
       inputs:
         version: 'v0.7.x'
