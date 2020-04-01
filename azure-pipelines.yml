@@ -57,22 +57,11 @@ stages:
         version: 'v0.7.x'
 
     - task: PackageVSTSExtension@1
-      displayName: 'Package Extension for every branch except master'
-      inputs:
-        rootFolder: $(outputDir)
-        outputPath: '$(Build.ArtifactStagingDirectory)/package/'
-        extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.CommitsSinceVersionSource)'
-
-      condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
-
-    - task: PackageVSTSExtension@1
-      displayName: 'Package Extension for refs/heads/master only'
+      displayName: 'Package Extension'
       inputs:
         rootFolder: $(outputDir)
         outputPath: '$(Build.ArtifactStagingDirectory)/package/'
         extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
-
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: AzurepolicyTasks'
@@ -92,6 +81,11 @@ stages:
         deploy:        
           steps:
 
+          - task: GitVersion@5
+            displayName: GitVersion
+            inputs:
+              runtime: 'core'
+
           - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@2
             displayName: 'Install tfx-cli: v0.7.x'
             inputs:
@@ -106,7 +100,7 @@ stages:
               publisherId: '$(PublisherName)'
               extensionId: '$(ExtensionId)'
               extensionTag: Preview
-              updateTasksVersion: false
+              extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.CommitsSinceVersionSource)'
               updateTasksId: true
               extensionVisibility: privatepreview
               extensionPricing: free
@@ -121,6 +115,11 @@ stages:
       runOnce:
         deploy:        
           steps:
+
+          - task: GitVersion@5
+            displayName: GitVersion
+            inputs:
+              runtime: 'core'
 
           - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@2
             displayName: 'Install tfx-cli: v0.7.x'
