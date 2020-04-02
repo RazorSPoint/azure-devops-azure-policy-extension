@@ -9,3 +9,7 @@ owner:
   twitter: RazorSPoint
   linkedin: sebastianschuetze
   github: SebastianSchuetze
+  
+permalink:   /:categories/:title/
+markdown:    kramdown
+highlighter: rouge
