@@ -8,16 +8,8 @@ timezone: America/Los_Angeles
 twitter:
   username: jekyllrb
 logo: "/img/logo-2x.png"
-google_analytics_id: UA-50755011-1
-google_site_verification: onQcXpAvtHBrUI5LlroHNE_FP0b2qvFyPq7VZw36iEY
 collections:
   docs:
-    permalink: "/:collection/:path/"
-    output: true
-  posts:
-    permalink: "/news/:year/:month/:day/:title/"
-    output: true
-  tutorials:
     permalink: "/:collection/:path/"
     output: true
 defaults:
@@ -26,20 +18,6 @@ defaults:
     type: docs
   values:
     layout: docs
-- scope:
-    path: _posts
-    type: posts
-  values:
-    layout: news_item
-- scope:
-    path: _tutorials
-    type: tutorials
-  values:
-    layout: tutorials
-- scope:
-    path: ''
-  values:
-    image: "/img/jekyll-og.png"
 future: true
 plugins:
 - jekyll-avatar
