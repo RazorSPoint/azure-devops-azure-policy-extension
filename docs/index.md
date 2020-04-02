@@ -1,4 +1,9 @@
 
+---
+layout: page
+title: Home
+---
+
 # Azure Policy Build and Release Tasks
 
 This extension includes a group of tasks that can deploy Azure Policies and Initiatives.

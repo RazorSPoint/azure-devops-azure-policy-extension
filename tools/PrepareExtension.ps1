@@ -1,24 +1,17 @@
+
 [CmdletBinding()]
 param(
     [string]$sourcePath,
     [string]$outputDir,
     [switch]$generateChangeLog
 )
-
+$ErrorActionPreference = "Stop"
 try {
-    
+
 
     if (Test-Path $outputDir) {
         Write-Output "cleared destination parth $outputDir"
         $null = Remove-Item -Path $outputDir -Recurse -Force 
-    }
-
-    if ($generateChangeLog) {
-        Write-Output "generating extension readme with changelogs"
-        . ./tools/GenerateChangelog.ps1 `
-            -outputFilePath "$outputDir/overview.md" `
-            -readmeFilePath "./$outputDir/overview.md" `
-            -changelogFilePath "./docs/CHANGELOG.md"
     }
 
     Write-Output "merge files to $outputDir from $sourcePath"
@@ -29,6 +22,15 @@ try {
     Where-Object { $_.Name -notin $excludes } | 
     Copy-Item -Destination $outputDir -Recurse -Force
     Copy-Item -Path "$sourcePath\vss-extension.json" -Destination $outputDir -Recurse -Force
+    Copy-Item -Path "$sourcePath\overview.md" -Destination $outputDir -Recurse -Force
+
+    if ($generateChangeLog) {
+        Write-Output "generating extension readme with changelogs"
+        . ./tools/GenerateChangelog.ps1 `
+            -outputFilePath "$outputDir/overview.md" `
+            -readmeFilePath "./$outputDir/overview.md" `
+            -changelogFilePath "./docs/CHANGELOG.md"
+    }
 
     Write-Output "loading extension file from $outputDir\vss-extension.json"
     $extensionFileJson = Get-Content -Path "$outputDir\vss-extension.json" | Out-String | ConvertFrom-Json

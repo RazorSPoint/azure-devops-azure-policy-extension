@@ -17,6 +17,7 @@ pr:
     - README.md
     - tools
     - BuildPreparation.ps1
+    - docs
 
 pool:
   vmImage: windows-latest
