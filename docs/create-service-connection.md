@@ -1,3 +1,7 @@
+layout: page
+title: "Create and prepare a Service Connection"
+permalink: /create-service-connection/
+
 # Create and prepare a Service Connection
 
 This is a small helper document to guide you through on how to create a service connection for the pipeline tasks of this extension.
