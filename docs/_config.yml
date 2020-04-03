@@ -1,44 +1,18 @@
----
-version: 4.0.0
-name: Jekyll • Simple, blog-aware, static sites
-description: Transform your plain text into static websites and blogs
-url: https://jekyllrb.com
-repository: https://github.com/jekyll/jekyll
-timezone: America/Los_Angeles
-twitter:
-  username: jekyllrb
-logo: "/img/logo-2x.png"
-collections:
-  docs:
-    permalink: "/:collection/:path/"
-    output: true
-defaults:
-- scope:
-    path: _docs
-    type: docs
-  values:
-    layout: docs
-future: true
-plugins:
-- jekyll-avatar
-- jekyll-feed
-- jekyll-mentions
-- jekyll-redirect-from
-- jekyll-seo-tag
-- jekyll-sitemap
-- jemoji
-feed:
-  categories:
-  - release
-kramdown:
-  syntax_highlighter_opts:
-    default_lang: plaintext
-sass:
-  style: compressed
-strict_front_matter: true
-exclude:
-- ".gitignore"
-- ".jekyll-cache"
-- CNAME
-- icomoon-selection.json
-- readme.md
+remote-theme: pmarsceill/just-the-docs
+title: Welcome to the Azure DevOps Policy Pipeline Extension Docs
+
+locale: en_US
+#logo:
+
+### Search ###
+search_enabled: true
+# Enable support for hyphenated search words:
+search_tokenizer_separator: /[\s/]+/
+
+#Site Config
+heading_anchors: true
+color_scheme: "dark"
+
+aux_links:
+  "Just the Docs on GitHub":
+    - "//github.com/pmarsceill/just-the-docs"
