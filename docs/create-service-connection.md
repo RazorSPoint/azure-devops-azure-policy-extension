@@ -1,6 +1,8 @@
-layout: page
-title: "Create and prepare a Service Connection"
-permalink: /create-service-connection/
+---
+title: Test
+has_children: true
+nav_order: 2
+---
 
 # Create and prepare a Service Connection
 
