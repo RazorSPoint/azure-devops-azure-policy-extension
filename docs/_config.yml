@@ -1,9 +1,6 @@
 remote-theme: pmarsceill/just-the-docs
 title: Welcome to the Azure DevOps Policy Pipeline Extension Docs
 
-locale: en_US
-#logo:
-
 ### Search ###
 search_enabled: true
 # Enable support for hyphenated search words:
@@ -12,7 +9,3 @@ search_tokenizer_separator: /[\s/]+/
 #Site Config
 heading_anchors: true
 color_scheme: "dark"
-
-aux_links:
-  "Just the Docs on GitHub":
-    - "//github.com/pmarsceill/just-the-docs"
