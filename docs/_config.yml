@@ -1,4 +1,5 @@
 title: "Azure DevOps Policy Extension"
 remote_theme: pmarsceill/just-the-docs
+logo: "/assets/images/Icon256x256.png"
 color_scheme: "dark"
 search_enabled: true
