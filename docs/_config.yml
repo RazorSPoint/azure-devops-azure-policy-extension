@@ -2,4 +2,16 @@ title: "Azure DevOps Policy Extension"
 remote_theme: pmarsceill/just-the-docs
 logo: "/assets/images/Icon256x256.png"
 color_scheme: "dark"
+
+### Search ###
 search_enabled: true
+# Enable support for hyphenated search words:
+search_tokenizer_separator: /[\s/]+/
+
+### Links ###
+heading_anchors: true
+aux_links:
+  "Just the Docs on GitHub":
+    - "//github.com/pmarsceill/just-the-docs"
+    
+footer_content: "Copyright &copy; 2020 Sebastian Schütze. Distributed by a <a href=\"https://github.com/RazorSPoint/azure-devops-azure-policy-extension/blob/master/LICENSE\">GNU general public license.</a>"
