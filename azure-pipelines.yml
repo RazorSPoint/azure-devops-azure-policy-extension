@@ -5,73 +5,138 @@ resources:
 trigger:
   batch: true
   branches:
-    include: [ develop ]
+    include: [ master ]
+  paths:
+    exclude:
+    - README.md
+    - tools
+    - BuildPreparation.ps1
+    - docs
 
-queue:
-  name: Hosted VS2017
-  demands: npm
+pr:
+  autoCancel: true
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - README.md
+    - tools
+    - BuildPreparation.ps1
+    - docs
 
-steps:
-- task: gittools.gitversion.gitversion-task.GitVersion@4
-  displayName: GitVersion
-  inputs:
-    preferBundledVersion: false
+pool:
+  vmImage: windows-latest
+
+variables:
+  outputDir: './dist'
+  sourcePath: './src'
+  PublisherName: 'RazorSPoint'
+  ExtensionId: '6524a597-31bc-44fc-895d-0e9ba50f2493'
+  SharedWith: 'razorspoint-trashdummy,razorspoint'
 
 
-- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
-  displayName: 'Pester Test Runner'
-  inputs:
-    scriptFolder: "@{Path=''$(Build.SourcesDirectory)'; Parameters=@{AgentToolPath ='$(Agent.WorkFolder)'}}"
-    resultsFile: '$(Build.SourcesDirectory)\Test-Pester.XML'
-    run32Bit: false
+stages:
+- stage: Build
+  jobs:
+  - job: Build_Extension
+    displayName: 'Build Extension'
+    steps:
+    - task: GitVersion@5
+      displayName: GitVersion
+      inputs:
+        runtime: 'core'
 
-  enabled: false
+    - template: YamlTemplates/unitTests.yml
+      parameters:
+        CodeCoverage: 'true'
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results **\Test-*.xml'
-  inputs:
-    testResultsFormat: NUnit
-    testResultsFiles: '**\Test-*.xml'
-    searchFolder: '$(Build.SourcesDirectory)'
+    - pwsh: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1 -sourcePath $(sourcePath) -outputDir $(outputDir) -generateChangeLog'
+      displayName: 'Merge Extension Files for Build'
 
-  enabled: false
-  condition: succeededOrFailed()
+    - template: YamlTemplates/codeAnalysis.yml
 
-- powershell: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1'
-  displayName: 'Copy Common PowerShell Modules Into Tasks'
+    - task: TfxInstaller@2
+      inputs:
+        version: 'v0.7.x'
 
-- powershell: '$(Build.SourcesDirectory)/tools/GenerateChangelog.ps1'
-  displayName: 'Generate Extension Readme.md'
+    - task: PackageVSTSExtension@1
+      displayName: 'Package Extension'
+      inputs:
+        rootFolder: $(outputDir)
+        outputPath: '$(Build.ArtifactStagingDirectory)/package/'
+        extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
 
-- task: geeklearningio.gl-vsts-tasks-file-patch.json-patch-task.JsonPatch@3
-  displayName: 'Patch Azure Policy task.json'
-  inputs:
-    JsonWorkingDir: '$(Build.SourcesDirectory)/src/AzurePolicy/AzurePolicyV1'
-    JsonTargetFilters: task.json
-    JsonPatchContent: '= /version/Patch => "$(GitVersion.CommitsSinceVersionSource)"'
-    OutputPatchFile: true
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: AzurepolicyTasks'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/package/'
 
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
-  displayName: 'Package Extension for every branch except master'
-  inputs:
-    rootFolder: src
-    outputPath: '$(Build.ArtifactStagingDirectory)/package/'
-    extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.CommitsSinceVersionSource)'
+        ArtifactName: AzurepolicyTasks
 
-  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
 
-- task: ms-devlabs.vsts-developer-tools-build-tasks.package-extension-build-task.PackageVSTSExtension@1
-  displayName: 'Package Extension for refs/heads/master only'
-  inputs:
-    rootFolder: src
-    outputPath: '$(Build.ArtifactStagingDirectory)/package/'
-    extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
+- stage: Staging
+  jobs:
+  - deployment: Test_Release
+    displayName: 'Test Release'
+    environment: Staging
+    strategy:
+      runOnce:
+        deploy:        
+          steps:
+          - checkout: self 
 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+          - task: GitVersion@5
+            displayName: GitVersion
+            inputs:
+              runtime: 'core'
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: AzurepolicyTasks'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/package/'
+          - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@2
+            displayName: 'Install tfx-cli: v0.7.x'
+            inputs:
+              version: v0.7.x
 
-    ArtifactName: AzurepolicyTasks
+          - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishAzureDevOpsExtension@2
+            displayName: 'Publish Extension'
+            inputs:
+              connectedServiceName: 'Marketplace Connection'
+              fileType: vsix
+              vsixFile: '$(Build.StagingDirectory)/../AzurepolicyTasks/*.vsix'
+              publisherId: '$(PublisherName)'
+              extensionId: '$(ExtensionId)'
+              extensionTag: Preview
+              extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.CommitsSinceVersionSource)'
+              updateTasksId: true
+              extensionVisibility: privatepreview
+              extensionPricing: free
+              shareWith: '$(SharedWith)'
+
+- stage: Production
+  jobs:
+  - deployment: Public_Release
+    displayName: 'Public Release'
+    environment: Production
+    strategy:
+      runOnce:
+        deploy:        
+          steps:
+          - checkout: self 
+          - task: GitVersion@5
+            displayName: GitVersion
+            inputs:
+              runtime: 'core'
+
+          - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@2
+            displayName: 'Install tfx-cli: v0.7.x'
+            inputs:
+              version: v0.7.x
+
+          - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishAzureDevOpsExtension@2
+            displayName: 'Publish Extension '
+            inputs:
+              connectedServiceName: 'Marketplace Connection'
+              fileType: vsix
+              vsixFile: '$(Build.StagingDirectory)/../AzurePolicies/AzurepolicyTasks/*.vsix'
+              publisherId: '$(PublisherName)'
+              updateTasksVersion: false
+

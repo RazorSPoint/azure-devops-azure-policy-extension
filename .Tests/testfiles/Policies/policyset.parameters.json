@@ -1,0 +1,71 @@
+{
+    "EnvironmentTagValue": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Environment Tag Value",
+        "description": "The environment type that should be enforced"
+      }, 
+      "allowedValues": [
+        "development",
+        "production",
+        "test"
+      ]
+    },
+    "SolutionTagValue": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Solution Tag Value",
+        "description": "The solution name that should be enforced"
+      }
+    },
+    "DepartmentTagValue": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Department Tag Value",
+        "description": "The solution name that should be enforced"
+      },
+      "allowedValues": [
+        "DWP",
+        "MAN",
+        "BAH"
+      ]
+    },
+    "KgTagValue": {
+      "type": "String",
+      "metadata": {
+        "displayName": "KG Tag Value",
+        "description": "The KG short name that should be enforced"
+      },
+      "allowedValues": [
+        "DEU",
+        "ESP",
+        "DIB"
+      ]
+    },
+    "OwnerTagValue": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Owner Email Tag Value",
+        "description": "The owner email that should be enforced"
+      }
+    },
+    "CostCenterTagValue": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Cost Center Tag Value",
+        "description": "The owner email that should be enforced"
+      },
+      "allowedValues": [
+        "120032000",
+        "120036000",
+        "387024500"
+      ]
+    },
+    "RequesterTagValue": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Requester Email Tag Value",
+        "description": "The requester email that should be enforced"
+      }
+    }
+  }

@@ -1,0 +1,9 @@
+{
+    "Parameters": "{}",
+    "Description": "Some Description",
+    "Metadata": "{\"category\":\"SomeCategory\"}",
+    "PolicyRule": "{\"if\":{\"allOf\":[{\"not\":{\"field\":tags.CC\",\"equals\":\"[resourceGroup().tags.CC]\"}},{\"field\":\"tags.CC\",\"exists\":\"true\"},{\"field\":\"[resourceGroup().tags.CC]\",\"exists\":\"true\"}]},\"then\":{\"effect\":\"deny\"}}",
+    "Name": "Some-Name",
+    "Mode": "all",
+    "DisplayName": "Some DisplayName"
+}
