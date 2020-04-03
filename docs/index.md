@@ -1,39 +1,26 @@
-## Welcome to GitHub Pages
+---
+title: Home
+has_children: false
+nav_order: 1
+---
 
-🚀 🐼
+# Azure Policy Build and Release Tasks
 
-You can use the [editor on GitHub](https://github.com/pmarsceill/test-jtd/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+This extension includes a group of tasks that can deploy Azure Policies and Initiatives.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+**Note**: This project is used with GitHub and Azure DevOps projects features. Where GitHub is used for code and issues, but the complete build pipeline is hosted on Azure DevOps in the background.
 
-### Markdown
+* GitHub Project start page: [https://github.com/RazorSPoint/azure-devops-azure-policy-extension](https://github.com/RazorSPoint/azure-devops-azure-policy-extension)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Description here is kept short. The task itself and the configuration possibilities are explained on the information icons of each form component of the task.
 
-```markdown
-Syntax highlighted code block
+![](images/AzurePolicyTask06.png)
 
-# Header 1
-## Header 2
-### Header 3
+## Task - Deploy Azure Policy
+This task is intended to make it easier for you to publish Azure Policies to your azure tenant.
+This tasks needs a Azure Resource Manager service connection with a properly configured service principal.
 
-- Bulleted
-- List
+## Task - Deploy Azure Initiative
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/pmarsceill/test-jtd/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+This task is intended to make it easier for you to publish Policy Sets (Initiatives) to your azure tenant.
+This tasks needs a Azure Resource Manager service connection with a properly configured service principal.

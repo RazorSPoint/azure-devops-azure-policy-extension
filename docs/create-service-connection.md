@@ -1,6 +1,6 @@
 ---
-title: Test
-has_children: true
+title: Connect to Azure
+has_children: false
 nav_order: 2
 ---
 

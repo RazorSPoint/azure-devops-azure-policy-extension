@@ -1,4 +1,10 @@
-# <a id="Change-Log"> </a> Change Log
+---
+title: Change Log
+has_children: false
+nav_order: 3
+---
+
+# Change Log
 
 ## 0.4.0
 
