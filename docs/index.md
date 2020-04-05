@@ -21,6 +21,8 @@ Tasks are supposed to be very intuitive if you have basic knowledge of how Azure
 
 ![](images/AzurePolicyTask06.png)
 
+To setup the tasks wo work with Azure you need to [create a basic service connection to Azure](create-service-connection.md) in your project.
+
 ## Included Features / Tasks
 
 ### Task - Deploy Azure Policy
