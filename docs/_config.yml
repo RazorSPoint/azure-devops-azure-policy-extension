@@ -11,7 +11,7 @@ search_tokenizer_separator: /[\s/]+/
 ### Links ###
 heading_anchors: true
 aux_links:
-  "Just the Docs on GitHub":
-    - "//github.com/pmarsceill/just-the-docs"
+  "Repository on Github":
+    - "https://github.com/RazorSPoint/azure-devops-azure-policy-extension"
     
 footer_content: "Copyright &copy; 2020 Sebastian Schütze. Distributed by a <a href=\"https://github.com/RazorSPoint/azure-devops-azure-policy-extension/blob/master/LICENSE\">GNU general public license.</a>"
