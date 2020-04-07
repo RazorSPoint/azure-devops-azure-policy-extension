@@ -56,6 +56,9 @@ stages:
 
     - template: YamlTemplates/codeAnalysis.yml
 
+    - pwsh: "Tree $(outputDir) /f"
+      condition: always()
+
     - task: TfxInstaller@2
       inputs:
         version: 'v0.7.x'

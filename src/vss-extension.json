@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "rp-build-release-azurepolicy",
     "name": "Azure Policy and Governance Pipelines Tasks",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "publisher": "RazorSPoint",
     "targets": [{
         "id": "Microsoft.VisualStudio.Services"
@@ -15,9 +15,8 @@
         "Public"
     ],
     "tags": [
-        "Azure Policy", "Blueprint","Initiative","Policy Set","Management Groups",
-        "Governance", "Deployment","Compliance", "RazorSPoint","Conventions"
-    ],
+        "Azure Policy","Initiative","Policy Set","Management Groups",
+        "Governance", "Deployment","Compliance", "RazorSPoint"],
     "icons": {
         "default": "Images/Icon128x128.png",
         "large": "Images/Icon512x512.png"
