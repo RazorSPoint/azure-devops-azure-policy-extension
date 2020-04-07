@@ -290,7 +290,6 @@ __pycache__/
 *.xsd.cs
 
 #custom solution files
-src/overview.md
 src/AzurePolicy/AzurePolicy*/ps_modules
 src/AzureInitiative/AzureInitiative*/ps_modules
 .Tests/_temp
