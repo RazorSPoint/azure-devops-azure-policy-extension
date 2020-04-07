@@ -1,5 +1,5 @@
 ---
-title: Change Log
+title: Change Logs
 has_children: false
 nav_order: 3
 ---
