@@ -16,13 +16,15 @@ try {
 
     Write-Output "merge files to $outputDir from $sourcePath"
 
-    # copy files to dist folder without modules
-    $excludes = @("ps_modules")
-    Get-ChildItem $sourcePath -Directory | 
-    Where-Object { $_.Name -notin $excludes } | 
-    Copy-Item -Destination $outputDir -Recurse -Force
+    # copy files to dist folder
+    Copy-Item -Path $sourcePath -Destination $outputDir -Recurse -Force -Container
     Copy-Item -Path "$sourcePath\vss-extension.json" -Destination $outputDir -Recurse -Force
     Copy-Item -Path "$sourcePath\overview.md" -Destination $outputDir -Recurse -Force
+    #remove unwanted modules. They are prepared afterwards in the correct paths
+    $excludesPaths = @("ps_modules")
+    Get-ChildItem $outputDir -Directory | 
+    Where-Object { $_.Name -in $excludesPaths } |
+    Remove-Item -Force -Recurse
 
     if ($generateChangeLog) {
         Write-Output "generating extension readme with changelogs"
