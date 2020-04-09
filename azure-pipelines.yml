@@ -80,6 +80,8 @@ stages:
   - deployment: Test_Release
     displayName: 'Test Release'
     environment: Staging
+    variables:
+      extensionTag: 'Preview'
     strategy:
       runOnce:
         deploy:        
@@ -102,7 +104,7 @@ stages:
               connectedServiceName: 'Marketplace Connection'
               publisherId: '$(PublisherName)'
               extensionId: '$(ExtensionId)'
-              extensionTag: 'Preview'
+              extensionTag: $(extensionTag)
               versionAction: 'Patch'
 
           - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishAzureDevOpsExtension@2
@@ -113,7 +115,7 @@ stages:
               vsixFile: '$(Build.StagingDirectory)/../AzurepolicyTasks/*.vsix'
               publisherId: '$(PublisherName)'
               extensionId: '$(ExtensionId)'
-              extensionTag: Preview
+              extensionTag: $(extensionTag)
               extensionVersion: '$(Extension.Version)'
               updateTasksId: true
               extensionVisibility: privatepreview
