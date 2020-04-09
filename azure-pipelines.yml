@@ -68,7 +68,6 @@ stages:
       inputs:
         rootFolder: $(outputDir)
         outputPath: '$(Build.ArtifactStagingDirectory)/package/'
-        extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: AzurepolicyTasks'
@@ -116,19 +115,13 @@ stages:
 
 - stage: Production
   jobs:
-  - deployment: Public_Release
-    displayName: 'Public Release'
+  - deployment: Public_Marketplace
+    displayName: 'Public Marketplace'
     environment: Production
     strategy:
       runOnce:
         deploy:        
           steps:
-          - checkout: self 
-          - task: GitVersion@5
-            displayName: GitVersion
-            inputs:
-              runtime: 'core'
-
           - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@2
             displayName: 'Install tfx-cli: v0.7.x'
             inputs:
@@ -142,4 +135,25 @@ stages:
               vsixFile: '$(Build.StagingDirectory)/../AzurePolicies/AzurepolicyTasks/*.vsix'
               publisherId: '$(PublisherName)'
               updateTasksVersion: false
+
+- stage: GitHub
+  jobs:
+  - deployment: GitHub_Release
+    displayName: 'GitHub Release'
+    environment: GitHub
+    strategy:
+      runOnce:
+        deploy:        
+          steps:
+          - task: GithubRelease@0
+            displayName: 'Create GitHub Release'
+            inputs:
+              gitHubConnection: SebastianSchuetze
+              repositoryName: RazorSPoint/azure-devops-azure-policy-extension
+              tagSource: manual
+              tag: v$(PACKAGE_VERSION)
+              addChangeLog: true
+              compareWith: 'lastFullRelease'
+              assets: |
+                $(Pipeline.Workspace)/AzurePolicyTasks/*.vsix
 
