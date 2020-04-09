@@ -127,6 +127,7 @@ stages:
   - deployment: GitHub_Preview
     displayName: 'GitHub Preview'
     environment: GitHub
+    dependsOn: Test_Release
     strategy:
       runOnce:
         deploy:        
@@ -155,6 +156,7 @@ stages:
               tag: v$(PACKAGE_VERSION)
               addChangeLog: true
               compareWith: 'lastFullRelease'
+              isDraft: true
               assets: |
                 $(Pipeline.Workspace)/AzurePolicyTasks/*.vsix
 
