@@ -147,6 +147,8 @@ stages:
                 Write-Host "##vso[task.setvariable variable=EXTENSION_VERSION;isOutput=false]$($manifest.PackageManifest.Metadata.Identity.Version)"
               workingDirectory: '$(Pipeline.Workspace)/AzurePolicyTasks'
 
+
+
           - task: GithubRelease@0
             displayName: 'Create GitHub Release'
             inputs:
@@ -159,6 +161,7 @@ stages:
               compareWith: 'lastFullRelease'
               isDraft: true
               assets: |
+                d:\a\1\AzurepolicyTasks\RazorSPoint.rp-build-release-azurepolicy-2.0.3.vsix
                 $(Pipeline.Workspace)/AzurePolicyTasks/*.vsix
 
 - stage: Production
