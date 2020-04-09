@@ -101,6 +101,7 @@ stages:
               version: v0.7.x
 
           - task: QueryAzureDevOpsExtensionVersion@2
+            name: PolicyVersion
             inputs:
               connectTo: 'VsTeam'
               connectedServiceName: 'Marketplace Connection'
@@ -109,7 +110,7 @@ stages:
               extensionTag: $(extensionTag)
               versionAction: 'Patch'
 
-          - powershell: 'Write-Host "$(Extension.Version)"'
+          - powershell: 'Write-Host "$(PolicyVersion.Extension.Version)"'
 
           - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishAzureDevOpsExtension@2
             displayName: 'Publish Extension'
@@ -120,7 +121,7 @@ stages:
               publisherId: '$(PublisherName)'
               extensionId: '$(ExtensionId)'
               extensionTag: $(extensionTag)
-              extensionVersion: $(Extension.Version)
+              extensionVersion: $(PolicyVersion.Extension.Version)
               updateTasksId: true
               extensionVisibility: privatepreview
               extensionPricing: free
