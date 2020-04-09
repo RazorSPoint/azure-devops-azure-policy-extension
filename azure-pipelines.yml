@@ -142,10 +142,11 @@ stages:
               script: |
                 Get-ChildItem -Path .\* -Include '*.vsix' -Recurse | Rename-Item -NewName "extension.zip"
                 Expand-Archive -Path .\extension.zip -DestinationPath .\
-                Tree './' /f
                 $manifest = [xml](Get-Content .\extension.vsixmanifest)             
                 Write-Host "##vso[task.setvariable variable=PACKAGE_VERSION;isOutput=false]$($manifest.PackageManifest.Metadata.Identity.Version)"
               workingDirectory: '$(Pipeline.Workspace)/AzurePolicyTasks'
+
+          - powershell: 'Tree "d:\a\1\AzurePolicyTasks" /f'
 
           - task: GithubRelease@0
             displayName: 'Create GitHub Release'
@@ -154,12 +155,21 @@ stages:
               repositoryName: RazorSPoint/azure-devops-azure-policy-extension
               tagSource: manual
               tag: v$(PACKAGE_VERSION)
+              title: 'Version $(PACKAGE_VERSION)'
               addChangeLog: true
               compareWith: 'lastFullRelease'
               isDraft: true
               assets: |
                 $(Pipeline.Workspace)/AzurePolicyTasks/*.vsix
-
+- task: GitHubRelease@1
+  inputs:
+    repositoryName: '$(Build.Repository.Name)'
+    action: 'create'
+    target: '$(Build.SourceVersion)'
+    tagSource: 'gitTag'
+    title: 'Version'
+    changeLogCompareToRelease: 'lastFullRelease'
+    changeLogType: 'commitBased'
 - stage: Production
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   jobs:
