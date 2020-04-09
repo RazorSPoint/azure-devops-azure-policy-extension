@@ -110,8 +110,6 @@ stages:
               extensionTag: $(extensionTag)
               versionAction: 'Patch'
 
-          - powershell: 'Write-Host "$(PolicyVersion.Extension.Version)"'
-
           - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishAzureDevOpsExtension@2
             displayName: 'Publish Extension'
             inputs:
@@ -135,21 +133,15 @@ stages:
       runOnce:
         deploy:        
           steps:
-          - download: current  # refers to artifacts published by current pipeline
-            artifact: AzurepolicyTasks
 
-          - task: PowerShell@2
-            displayName: 'Get Version from Extension Package'
+          - task: QueryAzureDevOpsExtensionVersion@2
+            name: PolicyVersion
             inputs:
-              targetType: 'inline'
-              script: |
-                Get-ChildItem -Path .\* -Include '*.vsix' -Recurse | Rename-Item -NewName "extension.zip"
-                Expand-Archive -Path .\extension.zip -DestinationPath .\
-                $manifest = [xml](Get-Content .\extension.vsixmanifest)             
-                Write-Host "##vso[task.setvariable variable=PACKAGE_VERSION;isOutput=false]$($manifest.PackageManifest.Metadata.Identity.Version)"
-              workingDirectory: '$(Pipeline.Workspace)/AzurePolicyTasks'
-
-          - powershell: 'Tree "d:\a\1\AzurePolicyTasks" /f'
+              connectTo: 'VsTeam'
+              connectedServiceName: 'Marketplace Connection'
+              publisherId: '$(PublisherName)'
+              extensionId: '$(ExtensionId)'
+              extensionTag: $(extensionTag)
 
           - task: GithubRelease@0
             displayName: 'Create GitHub Release'
@@ -157,8 +149,8 @@ stages:
               gitHubConnection: SebastianSchuetze
               repositoryName: RazorSPoint/azure-devops-azure-policy-extension
               tagSource: manual
-              tag: v$(PACKAGE_VERSION)
-              title: 'Version $(PACKAGE_VERSION)'
+              tag: v$(PolicyVersion.Extension.Version)
+              title: 'Version $(PolicyVersion.Extension.Version)'
               addChangeLog: true
               compareWith: 'lastFullRelease'
               isDraft: true
