@@ -109,6 +109,8 @@ stages:
               extensionTag: $(extensionTag)
               versionAction: 'Patch'
 
+          - powershell: 'Write-Host $(Extension.Version)'
+
           - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishAzureDevOpsExtension@2
             displayName: 'Publish Extension'
             inputs:
@@ -118,7 +120,7 @@ stages:
               publisherId: '$(PublisherName)'
               extensionId: '$(ExtensionId)'
               extensionTag: $(extensionTag)
-              extensionVersion: '$(Extension.Version)'
+              extensionVersion: $(Extension.Version)
               updateTasksId: true
               extensionVisibility: privatepreview
               extensionPricing: free
