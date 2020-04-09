@@ -135,6 +135,7 @@ stages:
           steps:
           - download: current  # refers to artifacts published by current pipeline
             artifact: AzurepolicyTasks
+            displayName: 'Download Extension Package'
 
           - task: PowerShell@2
             displayName: 'Get Version from Extension Package'
@@ -146,7 +147,6 @@ stages:
                 $manifest = [xml](Get-Content .\extension.vsixmanifest)             
                 Write-Host "##vso[task.setvariable variable=EXTENSION_VERSION;isOutput=false]$($manifest.PackageManifest.Metadata.Identity.Version)"
               workingDirectory: '$(Pipeline.Workspace)/AzurePolicyTasks'
-
 
 
           - task: GithubRelease@0
@@ -161,7 +161,6 @@ stages:
               compareWith: 'lastFullRelease'
               isDraft: true
               assets: |
-                d:\a\1\AzurepolicyTasks\RazorSPoint.rp-build-release-azurepolicy-2.0.3.vsix
                 $(Pipeline.Workspace)/AzurePolicyTasks/*.vsix
 
 - stage: Production
