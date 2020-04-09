@@ -296,3 +296,4 @@ src/AzureInitiative/AzureInitiative*/ps_modules
 coverage.xml
 test-results.xml
 dist
+*.vsix
