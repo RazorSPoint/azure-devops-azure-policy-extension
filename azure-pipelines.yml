@@ -109,7 +109,7 @@ stages:
               extensionTag: $(extensionTag)
               versionAction: 'Patch'
 
-          - powershell: 'Write-Host $(Extension.Version)'
+          - powershell: 'Write-Host "$(Extension.Version)"'
 
           - task: ms-devlabs.vsts-developer-tools-build-tasks.publish-extension-build-task.PublishAzureDevOpsExtension@2
             displayName: 'Publish Extension'
