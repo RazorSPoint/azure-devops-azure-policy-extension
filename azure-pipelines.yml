@@ -1,6 +1,13 @@
+
+
 resources:
 - repo: self
 
+parameters:
+- name: makeDraftRelease
+  displayName: 'Create a draft release in GitHub?'
+  type: boolean
+  default: false
 
 trigger:
   batch: true
@@ -56,6 +63,9 @@ stages:
 
     - template: YamlTemplates/codeAnalysis.yml
 
+    - pwsh: "Tree $(outputDir) /f"
+      condition: always()
+
     - task: TfxInstaller@2
       inputs:
         version: 'v0.7.x'
@@ -65,7 +75,6 @@ stages:
       inputs:
         rootFolder: $(outputDir)
         outputPath: '$(Build.ArtifactStagingDirectory)/package/'
-        extensionVersion: '$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: AzurepolicyTasks'
@@ -79,7 +88,7 @@ stages:
   jobs:
   - deployment: Test_Release
     displayName: 'Test Release'
-    environment: Staging
+    environment: Marketplace
     variables:
       extensionTag: 'Preview'
     strategy:
@@ -99,6 +108,7 @@ stages:
               version: v0.7.x
 
           - task: QueryAzureDevOpsExtensionVersion@2
+            name: PolicyVersion
             inputs:
               connectTo: 'VsTeam'
               connectedServiceName: 'Marketplace Connection'
@@ -116,27 +126,60 @@ stages:
               publisherId: '$(PublisherName)'
               extensionId: '$(ExtensionId)'
               extensionTag: $(extensionTag)
-              extensionVersion: '$(Extension.Version)'
+              extensionVersion: $(PolicyVersion.Extension.Version)
               updateTasksId: true
               extensionVisibility: privatepreview
               extensionPricing: free
               shareWith: '$(SharedWith)'
 
-- stage: Production
-  jobs:
-  - deployment: Public_Release
-    displayName: 'Public Release'
-    environment: Production
+  - deployment: GitHub_Preview
+    displayName: 'GitHub Preview'
+    environment: GitHub
+    dependsOn: Test_Release
     strategy:
       runOnce:
         deploy:        
           steps:
-          - checkout: self 
-          - task: GitVersion@5
-            displayName: GitVersion
-            inputs:
-              runtime: 'core'
+          - download: current  # refers to artifacts published by current pipeline
+            artifact: AzurepolicyTasks
+            displayName: 'Download Extension Package'
 
+          - task: PowerShell@2
+            displayName: 'Get Version from Extension Package'
+            inputs:
+              targetType: 'inline'
+              script: |
+                Get-ChildItem -Path .\* -Include '*.vsix' -Recurse | Copy-Item -Destination "extension.zip"
+                Expand-Archive -Path .\extension.zip -DestinationPath .\
+                $manifest = [xml](Get-Content .\extension.vsixmanifest)             
+                Write-Host "##vso[task.setvariable variable=EXTENSION_VERSION;isOutput=false]$($manifest.PackageManifest.Metadata.Identity.Version)"
+              workingDirectory: '$(Pipeline.Workspace)/AzurePolicyTasks'
+
+
+          - task: GithubRelease@0
+            displayName: 'Create GitHub Release'
+            inputs:
+              gitHubConnection: SebastianSchuetze
+              repositoryName: RazorSPoint/azure-devops-azure-policy-extension
+              tagSource: manual
+              tag: v$(EXTENSION_VERSION)
+              title: 'Version $(EXTENSION_VERSION)'
+              addChangeLog: true
+              compareWith: 'lastFullRelease'
+              isDraft: true
+              assets: |
+                $(Pipeline.Workspace)/AzurePolicyTasks/*.vsix
+
+- stage: Production
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - deployment: Public_Marketplace
+    displayName: 'Public Marketplace'
+    environment: Marketplace
+    strategy:
+      runOnce:
+        deploy:        
+          steps:
           - task: ms-devlabs.vsts-developer-tools-build-tasks.tfx-installer-build-task.TfxInstaller@2
             displayName: 'Install tfx-cli: v0.7.x'
             inputs:
@@ -150,4 +193,40 @@ stages:
               vsixFile: '$(Build.StagingDirectory)/../AzurePolicies/AzurepolicyTasks/*.vsix'
               publisherId: '$(PublisherName)'
               updateTasksVersion: false
+
+- stage: GitHub_Public
+  displayName: 'GitHub Public Release'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - deployment: GitHub_Release
+    displayName: 'GitHub Release'
+    environment: GitHub
+    strategy:
+      runOnce:
+        deploy:        
+          steps:
+          - download: current  # refers to artifacts published by current pipeline
+            artifact: AzurepolicyTasks
+
+          - task: PowerShell@2
+            displayName: 'Get Version from Extension Package'
+            inputs:
+              targetType: 'inline'
+              script: |
+                Get-ChildItem -Path .\* -Include '*.vsix' -Recurse | Expand-Archive -DestinationPath .\
+                Tree './' /f
+                $manifest = [xml](Get-Content .\extension.vsixmanifest)             
+                Write-Host "##vso[task.setvariable variable=PACKAGE_VERSION;isOutput=false]$($manifest.PackageManifest.Metadata.Identity.Version)"
+              workingDirectory: '$(Pipeline.Workspace)/AzurePolicyTasks'
+          - task: GithubRelease@0
+            displayName: 'Create GitHub Release'
+            inputs:
+              gitHubConnection: SebastianSchuetze
+              repositoryName: RazorSPoint/azure-devops-azure-policy-extension
+              tagSource: manual
+              tag: v$(PACKAGE_VERSION)
+              addChangeLog: true
+              compareWith: 'lastFullRelease'
+              assets: |
+                $(Pipeline.Workspace)/AzurePolicyTasks/*.vsix
 
