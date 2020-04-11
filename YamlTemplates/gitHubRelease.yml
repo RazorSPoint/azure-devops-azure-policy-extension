@@ -1,16 +1,21 @@
+parameters:
+  - name: isDraft
+  - default: false
+
 steps:
 - download: current  # refers to artifacts published by current pipeline
   artifact: AzurepolicyTasks
+  displayName: 'Download Extension Package'
 
 - task: PowerShell@2
   displayName: 'Get Version from Extension Package'
   inputs:
     targetType: 'inline'
     script: |
-      Get-ChildItem -Path .\* -Include '*.vsix' -Recurse | Expand-Archive -DestinationPath .\
-      Tree './' /f
+      Get-ChildItem -Path .\* -Include '*.vsix' -Recurse | Copy-Item -Destination "extension.zip"
+      Expand-Archive -Path .\extension.zip -DestinationPath .\
       $manifest = [xml](Get-Content .\extension.vsixmanifest)             
-      Write-Host "##vso[task.setvariable variable=PACKAGE_VERSION;isOutput=false]$($manifest.PackageManifest.Metadata.Identity.Version)"
+      Write-Host "##vso[task.setvariable variable=EXTENSION_VERSION;isOutput=false]$($manifest.PackageManifest.Metadata.Identity.Version)"
     workingDirectory: '$(Pipeline.Workspace)/AzurePolicyTasks'
 - task: GithubRelease@0
   displayName: 'Create GitHub Release'
@@ -18,8 +23,10 @@ steps:
     gitHubConnection: SebastianSchuetze
     repositoryName: RazorSPoint/azure-devops-azure-policy-extension
     tagSource: manual
-    tag: v$(PACKAGE_VERSION)
+    tag: v$(EXTENSION_VERSION)
+    title: 'Version $(EXTENSION_VERSION)'
     addChangeLog: true
     compareWith: 'lastFullRelease'
+    isDraft: ${{parameters.isDraft}}
     assets: |
       $(Pipeline.Workspace)/AzurePolicyTasks/*.vsix
