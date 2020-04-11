@@ -1,6 +1,13 @@
+
+
 resources:
 - repo: self
 
+parameters:
+- name: makeDraftRelease
+  displayName: 'Create a draft release in GitHub?'
+  type: boolean
+  default: false
 
 trigger:
   batch: true
@@ -125,10 +132,51 @@ stages:
               extensionPricing: free
               shareWith: '$(SharedWith)'
 
-  - deployment: GitHub_Preview
-    displayName: 'GitHub Preview'
-    environment: GitHub
-    dependsOn: Test_Release
+  - ${{ if eq(parameters.makeDraftRelease, 'true') }}:
+    - deployment: GitHub_Preview
+      displayName: 'GitHub Preview'
+      environment: GitHub
+      dependsOn: Test_Release
+      strategy:
+        runOnce:
+          deploy:        
+            steps:
+            - download: current  # refers to artifacts published by current pipeline
+              artifact: AzurepolicyTasks
+              displayName: 'Download Extension Package'
+
+            - task: PowerShell@2
+              displayName: 'Get Version from Extension Package'
+              inputs:
+                targetType: 'inline'
+                script: |
+                  Get-ChildItem -Path .\* -Include '*.vsix' -Recurse | Copy-Item -Destination "extension.zip"
+                  Expand-Archive -Path .\extension.zip -DestinationPath .\
+                  $manifest = [xml](Get-Content .\extension.vsixmanifest)             
+                  Write-Host "##vso[task.setvariable variable=EXTENSION_VERSION;isOutput=false]$($manifest.PackageManifest.Metadata.Identity.Version)"
+                workingDirectory: '$(Pipeline.Workspace)/AzurePolicyTasks'
+
+
+            - task: GithubRelease@0
+              displayName: 'Create GitHub Release'
+              inputs:
+                gitHubConnection: SebastianSchuetze
+                repositoryName: RazorSPoint/azure-devops-azure-policy-extension
+                tagSource: manual
+                tag: v$(EXTENSION_VERSION)
+                title: 'Version $(EXTENSION_VERSION)'
+                addChangeLog: true
+                compareWith: 'lastFullRelease'
+                isDraft: true
+                assets: |
+                  $(Pipeline.Workspace)/AzurePolicyTasks/*.vsix
+
+- stage: Production
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - deployment: Public_Marketplace
+    displayName: 'Public Marketplace'
+    environment: Marketplace
     strategy:
       runOnce:
         deploy:        
