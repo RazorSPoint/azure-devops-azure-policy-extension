@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "rp-build-release-azurepolicy",
     "name": "Azure Policy and Governance Pipelines Tasks",
-    "version": "2.0.1",
+    "version": "2.0.3",
     "publisher": "RazorSPoint",
     "targets": [{
         "id": "Microsoft.VisualStudio.Services"
@@ -15,9 +15,8 @@
         "Public"
     ],
     "tags": [
-        "Azure Policy", "Blueprint","Initiative","Policy Set","Management Groups",
-        "Governance", "Deployment","Compliance", "RazorSPoint","Conventions"
-    ],
+        "Azure Policy","Initiative","Policy Set","Management Groups",
+        "Governance", "Deployment","Compliance", "RazorSPoint"],
     "icons": {
         "default": "Images/Icon128x128.png",
         "large": "Images/Icon512x512.png"
@@ -29,7 +28,7 @@
     },
     "links": {
         "getstarted": {
-            "uri": "https://github.com/RazorSPoint/azure-devops-azure-policy-extension.git"
+            "uri": "https://razorspoint.github.io/azure-devops-azure-policy-extension/"
         },
         "learn": {
             "uri": "https://docs.microsoft.com/en-us/azure/governance/policy/overview"
@@ -46,17 +45,17 @@
         {
             "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_build/latest?definitionId=19",
             "uri": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_apis/build/status/RazorSPoint.azure-devops-azure-policy-extension?branchName=master",
-            "description": "Azure DevOps build for the project"
+            "description": "Build"
         },
         {
-            "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_release?view=mine&definitionId=4&_a=releases",
-            "uri": "https://vsrm.dev.azure.com/RazorSpoint/_apis/public/Release/badge/3809133c-f9cd-4d0d-8e63-d1953bedc6cf/1/1",
-            "description": "Azure DevOps internal release for the project"
+            "href": "https://dev.azure.com/RazorSPoint/RP_Build-Release-AzurePolicy/_build/latest?definitionId=19&branchName=master",
+            "uri": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_apis/build/status/RazorSPoint.azure-devops-azure-policy-extension?branchName=master&stageName=Build",
+            "description": "Test Release"
         },
         {
-            "href": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_release?view=mine&definitionId=4&_a=releases",
-            "uri": "https://vsrm.dev.azure.com/RazorSpoint/_apis/public/Release/badge/3809133c-f9cd-4d0d-8e63-d1953bedc6cf/1/2",
-            "description": "Azure DevOps public release for the project"
+            "href": "https://dev.azure.com/RazorSPoint/RP_Build-Release-AzurePolicy/_build/latest?definitionId=19&branchName=master",
+            "uri": "https://dev.azure.com/razorspoint/RP_Build-Release-AzurePolicy/_apis/build/status/RazorSPoint.azure-devops-azure-policy-extension?branchName=master&stageName=Staging",
+            "description": "Live Release"
         }
     ],
     "screenshots": [{
