@@ -1,5 +1,5 @@
 parameters:
-  - isDraft: false
+  isDraft: false
 
 steps:
 - download: current  # refers to artifacts published by current pipeline
