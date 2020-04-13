@@ -44,7 +44,7 @@ else {
 $output = [System.IO.Path]::GetFullPath($output)
 
 if ($prepareExtension) {
-    . ./tools/PrepareExtension.ps1 -sourcePath $sourcePath -outputDir $outputDir -generateChangeLog
+    . ./tools/PrepareExtension.ps1 -sourcePath $sourcePath -outputDir $outputDir
     Write-Output "Publish complete to $outputDir"
 }
 
