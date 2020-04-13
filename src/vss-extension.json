@@ -27,6 +27,9 @@
         },
         "license": {
             "path": "eula.md"
+        },
+        "privacypolicy": {
+            "path":"privacy.md"
         }
     },
     "links": {        
