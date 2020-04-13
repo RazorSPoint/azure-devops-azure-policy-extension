@@ -2,8 +2,7 @@
 [CmdletBinding()]
 param(
     [string]$sourcePath,
-    [string]$outputDir,
-    [switch]$generateChangeLog
+    [string]$outputDir
 )
 $ErrorActionPreference = "Stop"
 try {
@@ -25,14 +24,6 @@ try {
     Get-ChildItem $outputDir -Directory | 
     Where-Object { $_.Name -in $excludesPaths } |
     Remove-Item -Force -Recurse
-
-    if ($generateChangeLog) {
-        Write-Output "generating extension readme with changelogs"
-        . ./tools/GenerateChangelog.ps1 `
-            -outputFilePath "$outputDir/overview.md" `
-            -readmeFilePath "./$outputDir/overview.md" `
-            -changelogFilePath "./docs/CHANGELOG.md"
-    }
 
     Write-Output "loading extension file from $outputDir\vss-extension.json"
     $extensionFileJson = Get-Content -Path "$outputDir\vss-extension.json" | Out-String | ConvertFrom-Json

@@ -20,3 +20,6 @@ This task is intended to make it easier for you to publish Azure Policies to you
 
 This task is intended to make it easier for you to publish Policy Sets (Initiatives) to your azure tenant. This tasks needs a Azure Resource Manager service connection with a properly configured service principal.
 
+## Change Logs
+
+Change logs can be found [on the documentation pages on GitHub](https://razorspoint.github.io/azure-devops-azure-policy-extension/CHANGELOG.html).

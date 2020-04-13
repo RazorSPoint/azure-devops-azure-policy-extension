@@ -58,7 +58,7 @@ stages:
       parameters:
         CodeCoverage: 'true'
 
-    - pwsh: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1 -sourcePath $(sourcePath) -outputDir $(outputDir) -generateChangeLog'
+    - pwsh: '$(Build.SourcesDirectory)/tools/PrepareExtension.ps1 -sourcePath $(sourcePath) -outputDir $(outputDir)'
       displayName: 'Merge Extension Files for Build'
 
     - template: YamlTemplates/codeAnalysis.yml
