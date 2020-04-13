@@ -165,7 +165,7 @@ stages:
             inputs:
               connectedServiceName: 'Marketplace Connection'
               fileType: vsix
-              vsixFile: '$(Build.StagingDirectory)/../AzurePolicies/AzurepolicyTasks/*.vsix'
+              vsixFile: '$(Build.StagingDirectory)/../AzurepolicyTasks/*.vsix'
               publisherId: '$(PublisherName)'
               updateTasksVersion: false
 
